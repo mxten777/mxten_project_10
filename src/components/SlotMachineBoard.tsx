@@ -140,26 +140,39 @@ const SlotMachineBoard: React.FC = () => {
         <div className="w-full flex justify-end mb-2">
           <SoundVibrationToggle />
         </div>
-        <div className={`flex flex-col items-center gap-4 p-4 bg-green-100 rounded-lg shadow w-full transition-all duration-500 
-          ${effect === 'jackpot-glow' ? 'ring-4 ring-yellow-400 bg-yellow-100 animate-pulse' : ''}
-          ${effect === 'win-glow' ? 'ring-2 ring-blue-300 bg-blue-50 animate-pulse' : ''}
-          ${effect === 'fail-shake' ? 'bg-red-100 animate-shake' : ''}
+        <div className={`flex flex-col items-center gap-4 p-6 rounded-xl shadow-2xl w-full transition-all duration-500 card-hover glass-effect
+          ${effect === 'jackpot-glow' ? 'ring-4 ring-yellow-400 animate-gradient-shift animate-glow-pulse' : 'bg-gradient-to-br from-green-100 to-emerald-200 dark:from-gray-800 dark:to-gray-700'}
+          ${effect === 'win-glow' ? 'ring-2 ring-blue-300 bg-gradient-to-br from-blue-50 to-cyan-100 animate-shimmer' : ''}
+          ${effect === 'fail-shake' ? 'bg-gradient-to-br from-red-100 to-pink-200 animate-shake' : ''}
         `}>
-          <div className="flex gap-4 text-6xl font-mono justify-center">
+          <div className="flex gap-6 text-7xl font-mono justify-center">
             {reels.map((symbol, i) => (
-              <span key={i}>{symbol}</span>
+              <div key={i} className={`p-3 rounded-lg bg-white/20 backdrop-blur-sm border border-white/30 shadow-lg transform transition-all duration-300 ${spinning ? 'animate-spin' : 'hover:scale-110'}`}>
+                <span className={`block ${effect === 'jackpot-glow' ? 'neon-text text-yellow-400' : ''} ${effect === 'win-glow' ? 'neon-text text-blue-400' : ''}`}>
+                  {symbol}
+                </span>
+              </div>
             ))}
           </div>
           <button
-            className="mt-4 px-6 py-2 bg-blue-500 text-white rounded-lg text-lg font-bold disabled:opacity-50 flex items-center gap-2 active:animate-btn-press transition-all"
+            className="mt-6 px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-xl text-xl font-bold disabled:opacity-50 flex items-center gap-3 active:animate-btn-press transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 relative overflow-hidden"
             onClick={handleSpin}
             disabled={spinning || balance < bet}
             aria-label="Spin"
           >
-            <span role="img" aria-label="slot">🎰</span>
-            {spinning ? '스핀 중...' : 'SPIN!'}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer"></div>
+            <span role="img" aria-label="slot" className="text-2xl">🎰</span>
+            <span className="relative z-10">{spinning ? '스핀 중...' : 'SPIN!'}</span>
           </button>
-          {result && <div className="mt-2 text-xl font-bold">{result}</div>}
+          {result && (
+            <div className={`mt-4 px-6 py-3 rounded-xl text-2xl font-bold shadow-lg transform transition-all duration-500 ${
+              result === 'JACKPOT!' ? 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white animate-float-up neon-text' :
+              result === '2개 일치!' ? 'bg-gradient-to-r from-blue-400 to-cyan-500 text-white animate-bounce' :
+              'bg-gradient-to-r from-gray-400 to-gray-600 text-white'
+            }`}>
+              {result}
+            </div>
+          )}
 
           {balance <= 0 && (
             <div className="mt-4 flex flex-col items-center gap-2 p-4 bg-red-50 border border-red-300 rounded-lg animate-pulse">
