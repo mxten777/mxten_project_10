@@ -45,7 +45,7 @@ const GamePage: React.FC = () => {
           </div>
 
           {/* 메인 게임 영역 - 모바일 최적화 */}
-          <div className="w-full max-w-sm sm:max-w-md md:max-w-2xl flex justify-center">
+          <div className="w-full max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl flex justify-center">
             <SlotMachineBoard />
           </div>
 

@@ -103,20 +103,25 @@ const sounds = {
 
 // 프리미엄 심볼 시스템
 const SYMBOLS = {
-  low: ['🍒', '🍋', '🍊', '🍇'],      // 낮은 배당 (2-5배)
-  medium: ['🔔', '⭐', '💎', '🎯'],   // 중간 배당 (5-15배)
-  high: ['7️⃣', '🎰', '👑', '💰'],    // 높은 배당 (20-100배)
+  low: ['�', '⚡', '🔥'],            // 낮은 배당 (2-3배)
+  medium: ['�', '🎯', '�'],         // 중간 배당 (4-6배)
+  high: ['💥', '�', '�'],           // 높은 배당 (8-10배)
   special: ['🌟', '💥']               // 특수 심볼 (와일드, 스캐터)
 };
 
 
 
-// 심볼별 배당률
+// 심볼별 배당률 (README 문서와 일치)
 const SYMBOL_PAYOUTS = {
-  '🍒': 2, '🍋': 3, '🍊': 3, '🍇': 4,
-  '🔔': 5, '⭐': 8, '💎': 10, '🎯': 12,
-  '7️⃣': 20, '🎰': 50, '👑': 75, '💰': 100,
-  '🌟': 0, '💥': 0  // 특수 심볼
+  '🎊': 2,   // 축하 - 2배 배당 + 1.2배 승수
+  '⚡': 3,   // 번개 - 3배 배당 + 1.3배 승수
+  '🔥': 3,   // 불꽃 - 3배 배당 + 1.3배 승수
+  '💰': 4,   // 머니백 - 4배 배당 + 1.5배 승수
+  '🎯': 5,   // 타겟 - 5배 배당 + 1.8배 승수
+  '🍀': 6,   // 클로버 - 6배 배당 + 2배 승수
+  '💥': 8,   // 폭발/스캐터 - 8배 배당 + 2.5배 승수
+  '🌟': 8,   // 스타/와일드 - 8배 배당 + 2.5배 승수
+  '💎': 10   // 다이아몬드 - 10배 배당 + 3배 승수 (최고급)
 };
 
 // 페이라인 정의 (3x3에서 가능한 승리 조합)
@@ -402,7 +407,7 @@ const SlotMachineBoard: React.FC = () => {
     <>
       <TutorialModal open={showTutorial} onClose={() => setShowTutorial(false)} />
       <PaytableModal isOpen={showPaytable} onClose={() => setShowPaytable(false)} />
-      <div className="flex flex-col items-center gap-3 sm:gap-4 w-full max-w-sm sm:max-w-md md:max-w-lg mx-auto px-2 sm:px-4">
+      <div className="flex flex-col items-center gap-3 sm:gap-4 w-full max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl mx-auto px-2 sm:px-4">
         {/* 🎮 상단 컨트롤 패널 - 모바일 최적화 */}
         <div className="w-full flex flex-col sm:flex-row justify-between items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-gradient-to-r from-indigo-900/80 to-purple-900/80 rounded-xl sm:rounded-2xl backdrop-blur-md shadow-xl border border-white/20">
           <div className="flex gap-2 sm:gap-3 w-full sm:w-auto justify-center sm:justify-start">
@@ -467,7 +472,7 @@ const SlotMachineBoard: React.FC = () => {
           ) : (
             /* 🎯 2D Framer Motion 프리미엄 슬롯 그리드 - 모바일 최적화 */
             <motion.div 
-              className="grid grid-cols-3 gap-2 sm:gap-3 p-3 sm:p-4 bg-black/30 rounded-xl sm:rounded-2xl backdrop-blur-sm border-2 border-gold/50"
+              className="grid grid-cols-3 gap-3 sm:gap-4 md:gap-5 p-4 sm:p-5 md:p-6 bg-black/30 rounded-xl sm:rounded-2xl backdrop-blur-sm border-2 border-gold/50"
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.6, ease: "easeOut" }}

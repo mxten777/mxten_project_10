@@ -42,7 +42,7 @@ export const AnimatedSlotReel: React.FC<AnimatedSlotReelProps> = ({
     >
       <motion.div
         className={`
-          relative w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-lg sm:rounded-xl border-2 cursor-pointer
+          relative w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 rounded-lg sm:rounded-xl border-2 cursor-pointer
           transform-gpu transition-all duration-300
           ${isSpinning ? 'bg-gradient-to-br from-purple-500 to-pink-500' : 'bg-gradient-to-br from-white/90 to-gray-100/90'}
           ${isWinning ? 'ring-2 sm:ring-4 ring-yellow-400 shadow-yellow-400/50' : ''}
@@ -82,7 +82,7 @@ export const AnimatedSlotReel: React.FC<AnimatedSlotReelProps> = ({
         >
           <motion.span
             className={`
-              text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold
+              text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold
               ${isWinning ? 'drop-shadow-lg filter brightness-110' : ''}
             `}
             animate={isWinning ? {
