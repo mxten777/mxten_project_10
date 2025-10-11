@@ -402,13 +402,13 @@ const SlotMachineBoard: React.FC = () => {
     <>
       <TutorialModal open={showTutorial} onClose={() => setShowTutorial(false)} />
       <PaytableModal isOpen={showPaytable} onClose={() => setShowPaytable(false)} />
-      <div className="flex flex-col items-center gap-4 w-full max-w-lg mx-auto px-4">
-        {/* 🎮 상단 컨트롤 패널 개선 */}
-        <div className="w-full flex justify-between items-center p-3 bg-gradient-to-r from-indigo-900/80 to-purple-900/80 rounded-2xl backdrop-blur-md shadow-xl border border-white/20">
-          <div className="flex gap-3">
+      <div className="flex flex-col items-center gap-3 sm:gap-4 w-full max-w-sm sm:max-w-md md:max-w-lg mx-auto px-2 sm:px-4">
+        {/* 🎮 상단 컨트롤 패널 - 모바일 최적화 */}
+        <div className="w-full flex flex-col sm:flex-row justify-between items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-gradient-to-r from-indigo-900/80 to-purple-900/80 rounded-xl sm:rounded-2xl backdrop-blur-md shadow-xl border border-white/20">
+          <div className="flex gap-2 sm:gap-3 w-full sm:w-auto justify-center sm:justify-start">
             <motion.button
               onClick={() => setShowPaytable(true)}
-              className="px-3 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-xl font-semibold hover:from-amber-600 hover:to-orange-600 transition-all duration-300 shadow-lg flex items-center gap-2 text-sm whitespace-nowrap"
+              className="px-2 sm:px-3 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-lg sm:rounded-xl font-semibold hover:from-amber-600 hover:to-orange-600 transition-all duration-300 shadow-lg flex items-center gap-1 sm:gap-2 text-xs sm:text-sm whitespace-nowrap min-h-[40px]"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -416,11 +416,11 @@ const SlotMachineBoard: React.FC = () => {
               <span>배당표</span>
             </motion.button>
             
-            {/* 3D 모드 토글 개선 */}
+            {/* 3D 모드 토글 - 모바일 최적화 */}
             <motion.button
               onClick={() => setIs3DMode(!is3DMode)}
               className={`
-                px-3 py-2 rounded-xl font-semibold transition-all duration-300 shadow-lg flex items-center gap-2 text-sm whitespace-nowrap
+                px-2 sm:px-3 py-2 rounded-lg sm:rounded-xl font-semibold transition-all duration-300 shadow-lg flex items-center gap-1 sm:gap-2 text-xs sm:text-sm whitespace-nowrap min-h-[40px]
                 ${is3DMode 
                   ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white ring-2 ring-purple-300' 
                   : 'bg-gradient-to-r from-slate-600 to-slate-700 text-white hover:from-slate-500 hover:to-slate-600'
@@ -434,13 +434,15 @@ const SlotMachineBoard: React.FC = () => {
             </motion.button>
           </div>
           
-          <SoundVibrationToggle />
+          <div className="w-full sm:w-auto flex justify-center">
+            <SoundVibrationToggle />
+          </div>
         </div>
         
-        {/* 🎰 메인 게임 보드 개선 */}
+        {/* 🎰 메인 게임 보드 - 모바일 최적화 */}
         <motion.div 
-          className={`flex flex-col items-center gap-6 p-6 rounded-3xl shadow-2xl w-full transition-all duration-500 backdrop-blur-md
-            ${effect === 'jackpot-glow' ? 'bg-gradient-to-br from-yellow-400/20 to-orange-500/20 ring-4 ring-yellow-400 animate-gradient-shift animate-glow-pulse border border-yellow-400/50' : 'bg-gradient-to-br from-slate-900/60 to-indigo-900/60 border border-white/20'}
+          className={`flex flex-col items-center gap-4 sm:gap-5 md:gap-6 p-4 sm:p-5 md:p-6 rounded-2xl sm:rounded-3xl shadow-2xl w-full transition-all duration-500 backdrop-blur-md
+            ${effect === 'jackpot-glow' ? 'bg-gradient-to-br from-yellow-400/20 to-orange-500/20 ring-2 sm:ring-4 ring-yellow-400 animate-gradient-shift animate-glow-pulse border border-yellow-400/50' : 'bg-gradient-to-br from-slate-900/60 to-indigo-900/60 border border-white/20'}
             ${effect === 'win-glow' ? 'bg-gradient-to-br from-blue-400/20 to-cyan-500/20 ring-2 ring-blue-300 animate-shimmer border border-blue-400/50' : ''}
             ${effect === 'fail-shake' ? 'bg-gradient-to-br from-red-400/20 to-pink-500/20 animate-shake border border-red-400/50' : ''}
           `}
@@ -463,9 +465,9 @@ const SlotMachineBoard: React.FC = () => {
               />
             </motion.div>
           ) : (
-            /* 🎯 2D Framer Motion 프리미엄 슬롯 그리드 */
+            /* 🎯 2D Framer Motion 프리미엄 슬롯 그리드 - 모바일 최적화 */
             <motion.div 
-              className="grid grid-cols-3 gap-3 p-4 bg-black/30 rounded-2xl backdrop-blur-sm border-2 border-gold/50"
+              className="grid grid-cols-3 gap-2 sm:gap-3 p-3 sm:p-4 bg-black/30 rounded-xl sm:rounded-2xl backdrop-blur-sm border-2 border-gold/50"
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.6, ease: "easeOut" }}

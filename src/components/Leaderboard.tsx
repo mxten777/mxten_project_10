@@ -18,12 +18,12 @@ const Leaderboard: React.FC = () => {
   }, []);
 
   return (
-    <div className="p-4 bg-gray-100 dark:bg-gray-800 rounded shadow w-full max-w-xs">
-      <div className="font-bold text-center mb-2 dark:text-yellow-200">Leaderboard</div>
+    <div className="p-3 sm:p-4 bg-gray-100 dark:bg-gray-800 rounded-lg sm:rounded shadow w-full max-w-xs">
+      <div className="font-bold text-center mb-2 text-sm sm:text-base dark:text-yellow-200">리더보드</div>
       {loading ? (
-        <div className="text-center text-gray-400 dark:text-gray-300">Loading...</div>
+        <div className="text-center text-gray-400 dark:text-gray-300 text-sm">로딩중...</div>
       ) : (
-        <ol className="space-y-1">
+        <ol className="space-y-1 text-sm">
           {items.map((item, i) => {
             let crown = '';
             let rowClass = '';
@@ -45,8 +45,8 @@ const Leaderboard: React.FC = () => {
               scoreClass = 'dark:text-yellow-200';
             }
             return (
-              <li key={i} className={`flex justify-between px-2 py-1 rounded items-center font-mono ${rowClass}`}>
-                <span className="flex items-center gap-1">
+              <li key={i} className={`flex justify-between px-2 py-1 rounded items-center font-mono text-xs sm:text-sm ${rowClass}`}>
+                <span className="flex items-center gap-1 truncate">
                   {crown && <span className="text-xl">{crown}</span>}
                   {i + 1}. {item.uid.slice(0, 6)}...
                 </span>

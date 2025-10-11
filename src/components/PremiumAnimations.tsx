@@ -42,10 +42,10 @@ export const AnimatedSlotReel: React.FC<AnimatedSlotReelProps> = ({
     >
       <motion.div
         className={`
-          relative w-20 h-20 md:w-24 md:h-24 rounded-xl border-2 cursor-pointer
+          relative w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-lg sm:rounded-xl border-2 cursor-pointer
           transform-gpu transition-all duration-300
           ${isSpinning ? 'bg-gradient-to-br from-purple-500 to-pink-500' : 'bg-gradient-to-br from-white/90 to-gray-100/90'}
-          ${isWinning ? 'ring-4 ring-yellow-400 shadow-yellow-400/50' : ''}
+          ${isWinning ? 'ring-2 sm:ring-4 ring-yellow-400 shadow-yellow-400/50' : ''}
           border-white/50 shadow-xl backdrop-blur-sm
         `}
         animate={isWinning ? {
@@ -58,7 +58,7 @@ export const AnimatedSlotReel: React.FC<AnimatedSlotReelProps> = ({
       >
         {/* 반사 효과 */}
         <motion.div 
-          className="absolute inset-0 rounded-xl bg-gradient-to-br from-white/40 via-transparent to-transparent"
+          className="absolute inset-0 rounded-lg sm:rounded-xl bg-gradient-to-br from-white/40 via-transparent to-transparent"
           animate={{
             opacity: isWinning ? [0.4, 0.8, 0.4] : 0.4
           }}
@@ -82,7 +82,7 @@ export const AnimatedSlotReel: React.FC<AnimatedSlotReelProps> = ({
         >
           <motion.span
             className={`
-              text-4xl md:text-5xl font-bold
+              text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold
               ${isWinning ? 'drop-shadow-lg filter brightness-110' : ''}
             `}
             animate={isWinning ? {
@@ -101,7 +101,7 @@ export const AnimatedSlotReel: React.FC<AnimatedSlotReelProps> = ({
         <AnimatePresence>
           {isWinning && (
             <motion.div
-              className="absolute inset-0 rounded-xl bg-gradient-to-r from-yellow-400/40 via-orange-500/40 to-yellow-400/40"
+              className="absolute inset-0 rounded-lg sm:rounded-xl bg-gradient-to-r from-yellow-400/40 via-orange-500/40 to-yellow-400/40"
               initial={{ opacity: 0 }}
               animate={{ 
                 opacity: [0, 0.6, 0]
@@ -289,9 +289,9 @@ export const AnimatedSpinButton: React.FC<AnimatedSpinButtonProps> = ({
   return (
     <motion.button
       className={`
-        mt-6 px-8 py-4 rounded-xl text-xl font-bold
-        flex items-center gap-3 relative overflow-hidden
-        transition-all duration-300 transform-gpu
+        mt-4 sm:mt-6 px-6 sm:px-8 py-3 sm:py-4 rounded-lg sm:rounded-xl text-lg sm:text-xl font-bold
+        flex items-center gap-2 sm:gap-3 relative overflow-hidden justify-center
+        transition-all duration-300 transform-gpu min-h-[52px] w-full sm:w-auto
         ${disabled 
           ? 'bg-gray-400 cursor-not-allowed' 
           : 'bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 cursor-pointer'
@@ -336,7 +336,7 @@ export const AnimatedSpinButton: React.FC<AnimatedSpinButtonProps> = ({
       
       {/* 아이콘 회전 애니메이션 */}
       <motion.span 
-        className="text-2xl relative z-10"
+        className="text-xl sm:text-2xl relative z-10"
         animate={isSpinning ? {
           rotate: 360
         } : {}}
