@@ -136,7 +136,7 @@ const PachinkoBoard: React.FC = () => {
       render.canvas.remove();
       render.textures = {};
     };
-  }, []);
+  }, [combo, score, setCombo, setScore, uid]);
 
   // 클릭 시 볼 드롭(좌우 이동)
   const handleBoardClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {

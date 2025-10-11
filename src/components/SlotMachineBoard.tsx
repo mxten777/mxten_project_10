@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import TutorialModal from './TutorialModal';
+import PaytableModal from './PaytableModal';
 import SoundVibrationToggle from './SoundVibrationToggle';
 import { useSoundVibrationStore } from '../stores/soundVibrationStore';
 import { useGameStore } from '../stores/gameStore';
@@ -7,28 +8,189 @@ import { useAuthStore } from '../stores/authStore';
 import { useBalanceStore } from '../stores/balanceStore';
 import { useAutoSpinStore } from '../stores/autoSpinStore';
 import { saveGameRun } from '../utils/firestoreGame';
-import { Howl } from 'howler';
-// 사운드 객체 준비
-const sounds = {
-  spin: new Howl({ src: ['/src/assets/sounds/spin-232536.mp3'] }),
-  button: new Howl({ src: ['/src/assets/sounds/button-press-382713.mp3'] }),
-  win: new Howl({ src: ['/src/assets/sounds/pop-win-casino-winning-398059.mp3'] }),
-  jackpot: new Howl({ src: ['/src/assets/sounds/jackpot.mp3'] }),
-  jackpot2: new Howl({ src: ['/src/assets/sounds/playful-casino-slot-machine-jackpot-3-183921.mp3'] }),
-  fail: new Howl({ src: ['/src/assets/sounds/sword-slash-and-swing-185432.mp3'] }),
+import { useParticleEffects } from '../utils/premiumParticles';
+import { AnimatedSlotReel, AnimatedResult, AnimatedSpinButton } from './SimpleAnimations';
+import { Slot3DContainer } from './Slot3D';
+import { motion } from 'framer-motion';
+import PremiumLottie from './PremiumLottie';
+// Web Audio API를 사용한 간단한 사운드 생성
+const createBeepSound = (frequency: number, duration: number, type: OscillatorType = 'sine') => {
+  return {
+    play: () => {
+      try {
+        const audioContext = new (window.AudioContext || (window as unknown as { webkitAudioContext: AudioContext }).webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.frequency.value = frequency;
+        oscillator.type = type;
+        
+        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+        
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + duration);
+      } catch (error) {
+        console.warn('Audio not supported:', error);
+      }
+    }
+  };
 };
 
-const SYMBOLS = ['🍒', '🍋', '🔔', '⭐', '7️⃣'];
-const REEL_COUNT = 3;
+// 복합음을 위한 멜로디 사운드
+const createMelodySound = (notes: { freq: number; duration: number }[]) => {
+  return {
+    play: () => {
+      try {
+        const audioContext = new (window.AudioContext || (window as unknown as { webkitAudioContext: AudioContext }).webkitAudioContext)();
+        let startTime = audioContext.currentTime;
+        
+        notes.forEach((note) => {
+          const oscillator = audioContext.createOscillator();
+          const gainNode = audioContext.createGain();
+          
+          oscillator.connect(gainNode);
+          gainNode.connect(audioContext.destination);
+          
+          oscillator.frequency.value = note.freq;
+          oscillator.type = 'sine';
+          
+          gainNode.gain.setValueAtTime(0.2, startTime);
+          gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + note.duration);
+          
+          oscillator.start(startTime);
+          oscillator.stop(startTime + note.duration);
+          
+          startTime += note.duration * 0.8; // 약간 겹치도록
+        });
+      } catch (error) {
+        console.warn('Audio not supported:', error);
+      }
+    }
+  };
+};
+
+// 게임 사운드 정의
+const sounds = {
+  button: createBeepSound(800, 0.1, 'square'),
+  spin: createBeepSound(400, 1.5, 'sawtooth'),
+  win: createMelodySound([
+    { freq: 523, duration: 0.2 }, // C5
+    { freq: 659, duration: 0.2 }, // E5
+    { freq: 784, duration: 0.3 }, // G5
+  ]),
+  jackpot: createMelodySound([
+    { freq: 523, duration: 0.15 }, // C5
+    { freq: 659, duration: 0.15 }, // E5
+    { freq: 784, duration: 0.15 }, // G5
+    { freq: 1047, duration: 0.2 }, // C6
+    { freq: 784, duration: 0.2 },  // G5
+    { freq: 1047, duration: 0.3 }, // C6
+  ]),
+  jackpot2: createMelodySound([
+    { freq: 1047, duration: 0.1 }, // C6
+    { freq: 1175, duration: 0.1 }, // D6
+    { freq: 1319, duration: 0.1 }, // E6
+    { freq: 1397, duration: 0.2 }, // F6
+    { freq: 1319, duration: 0.1 }, // E6
+    { freq: 1047, duration: 0.3 }, // C6
+  ]),
+  fail: createBeepSound(200, 0.5, 'square'),
+};
+
+// 프리미엄 심볼 시스템
+const SYMBOLS = {
+  low: ['🍒', '🍋', '🍊', '🍇'],      // 낮은 배당 (2-5배)
+  medium: ['🔔', '⭐', '💎', '🎯'],   // 중간 배당 (5-15배)
+  high: ['7️⃣', '🎰', '👑', '💰'],    // 높은 배당 (20-100배)
+  special: ['🌟', '💥']               // 특수 심볼 (와일드, 스캐터)
+};
+
+
+
+// 심볼별 배당률
+const SYMBOL_PAYOUTS = {
+  '🍒': 2, '🍋': 3, '🍊': 3, '🍇': 4,
+  '🔔': 5, '⭐': 8, '💎': 10, '🎯': 12,
+  '7️⃣': 20, '🎰': 50, '👑': 75, '💰': 100,
+  '🌟': 0, '💥': 0  // 특수 심볼
+};
+
+// 페이라인 정의 (3x3에서 가능한 승리 조합)
+const PAYLINES = [
+  [0, 1, 2], // 첫 번째 행
+  [3, 4, 5], // 두 번째 행
+  [6, 7, 8], // 세 번째 행
+  [0, 3, 6], // 첫 번째 열
+  [1, 4, 7], // 두 번째 열
+  [2, 5, 8], // 세 번째 열
+  [0, 4, 8], // 대각선 1
+  [2, 4, 6]  // 대각선 2
+];
+
+// 가중치가 적용된 랜덤 심볼 생성
+function getWeightedRandomSymbol(): string {
+  const random = Math.random();
+  if (random < 0.4) return SYMBOLS.low[Math.floor(Math.random() * SYMBOLS.low.length)];
+  if (random < 0.7) return SYMBOLS.medium[Math.floor(Math.random() * SYMBOLS.medium.length)];
+  if (random < 0.95) return SYMBOLS.high[Math.floor(Math.random() * SYMBOLS.high.length)];
+  return SYMBOLS.special[Math.floor(Math.random() * SYMBOLS.special.length)];
+}
 
 function getRandomSymbols() {
-  return Array(REEL_COUNT)
+  return Array(9) // 3x3 = 9개 심볼
     .fill(0)
-    .map(() => SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)]);
+    .map(() => getWeightedRandomSymbol());
 }
 
 function getRandomSymbol() {
-  return SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
+  return getWeightedRandomSymbol();
+}
+
+// 승리 조합 체크 함수
+function checkWinningCombinations(symbols: string[]) {
+  const wins: Array<{
+    line: number[];
+    symbol: string;
+    payout: number;
+    multiplier: number;
+  }> = [];
+
+  PAYLINES.forEach((line) => {
+    const [pos1, pos2, pos3] = line;
+    const symbol1 = symbols[pos1];
+    const symbol2 = symbols[pos2];
+    const symbol3 = symbols[pos3];
+
+    // 와일드 심볼(🌟) 처리
+    const isWild = (sym: string) => sym === '🌟';
+    
+    if (symbol1 === symbol2 && symbol2 === symbol3 && !isWild(symbol1)) {
+      // 일반 3개 일치
+      wins.push({
+        line,
+        symbol: symbol1,
+        payout: SYMBOL_PAYOUTS[symbol1 as keyof typeof SYMBOL_PAYOUTS] || 1,
+        multiplier: 1
+      });
+    } else if (isWild(symbol1) || isWild(symbol2) || isWild(symbol3)) {
+      // 와일드 포함 조합
+      const nonWildSymbols = [symbol1, symbol2, symbol3].filter(s => !isWild(s));
+      if (nonWildSymbols.length >= 2 && nonWildSymbols[0] === nonWildSymbols[1]) {
+        wins.push({
+          line,
+          symbol: nonWildSymbols[0],
+          payout: SYMBOL_PAYOUTS[nonWildSymbols[0] as keyof typeof SYMBOL_PAYOUTS] || 1,
+          multiplier: 2 // 와일드 보너스
+        });
+      }
+    }
+  });
+
+  return wins;
 }
 
 const SlotMachineBoard: React.FC = () => {
@@ -38,154 +200,451 @@ const SlotMachineBoard: React.FC = () => {
   const { uid } = useAuthStore();
   const { bet, balance, decreaseBalance, increaseBalance, setBalance } = useBalanceStore();
   const { autoSpin } = useAutoSpinStore();
+  
+  // 프리미엄 파티클 효과
+  const particles = useParticleEffects();
 
 
   const [reels, setReels] = useState<string[]>(getRandomSymbols());
   const [spinning, setSpinning] = useState(false);
   const [result, setResult] = useState<string | null>(null);
   const [effect, setEffect] = useState<string>('');
+  const [winningLines, setWinningLines] = useState<number[][]>([]);
+  const [totalWin, setTotalWin] = useState(0);
+  const [lottieType, setLottieType] = useState<'jackpot' | 'bonus' | 'win' | 'celebration' | 'spin' | null>(null);
 
   // 튜토리얼 모달 상태
   const [showTutorial, setShowTutorial] = useState(false);
+  const [showPaytable, setShowPaytable] = useState(false);
+  
+  // 3D 모드 토글
+  const [is3DMode, setIs3DMode] = useState(false);
+  
   useEffect(() => {
     if (!localStorage.getItem('tutorialShown')) {
       setShowTutorial(true);
       localStorage.setItem('tutorialShown', '1');
     }
-  }, []);
+    
+    // 🎊 웰컴 파티클 효과
+    if (!localStorage.getItem('welcomeShown')) {
+      particles.welcome();
+      localStorage.setItem('welcomeShown', '1');
+    }
+  }, [particles]);
 
 
   const handleSpin = () => {
-    if (spinning || balance < bet) return;
+    console.log('Spin clicked! Balance:', balance, 'Bet:', bet, 'Spinning:', spinning);
+    if (spinning || balance < bet) {
+      console.log('Spin blocked - already spinning or insufficient balance');
+      return;
+    }
+    console.log('Starting spin...');
     if (soundOn) sounds.button.play();
-    decreaseBalance(bet); // 스핀 시 베팅만큼 차감
+    decreaseBalance(bet);
     setSpinning(true);
     setResult(null);
+    setWinningLines([]);
+    setTotalWin(0);
+    setLottieType('spin');
 
-    // 릴별 애니메이션 상태
-    let current = [...reels];
+    // 3x3 그리드 애니메이션 - 실시간 상태 업데이트
     let stopped = 0;
-    const spinCounts = [20, 30, 40]; // 릴별로 다르게 멈춤
+    const spinCounts = Array.from({length: 9}, (_, i) => 15 + i * 3); // 각 셀별로 다른 속도 (더 빠르게)
     if (soundOn) sounds.spin.play();
 
-  function spinReel(reelIdx: number, count: number) {
+    function spinCell(cellIdx: number, count: number) {
       if (count === 0) {
         stopped++;
-        if (stopped === REEL_COUNT) {
+        if (stopped === 9) { // 9개 셀 모두 정지
+          // 최종 심볼들로 결과 계산
+          const finalReels = getRandomSymbols(); // 새로운 최종 결과
+          setReels(finalReels);
           setSpinning(false);
-          // 결과 계산
-          const final = current;
+          setLottieType(null); // 스핀 애니메이션 종료
+          
+          // 프리미엄 승리 조합 계산
+          const wins = checkWinningCombinations(finalReels);
+          let totalPayout = 0;
           let resultText = '';
-          let addScore = 0;
           let newCombo = combo;
-          if (final.every((s) => s === final[0])) {
-            resultText = 'JACKPOT!';
-            addScore = bet * 10; // JACKPOT 배당
-            newCombo = combo + 1;
-            if (soundOn) (Math.random() < 0.5 ? sounds.jackpot : sounds.jackpot2).play();
-            increaseBalance(addScore);
-            setEffect('jackpot-glow');
-          } else if (new Set(final).size === 2) {
-            resultText = '2개 일치!';
-            addScore = bet * 2; // 2개 일치 배당
-            newCombo = combo + 1;
-            if (soundOn) sounds.win.play();
-            increaseBalance(addScore);
-            setEffect('win-glow');
+
+          if (wins.length > 0) {
+            // 승리 라인들 처리
+            const winLines = wins.map(w => w.line);
+            setWinningLines(winLines);
+            
+            totalPayout = wins.reduce((sum, win) => sum + (bet * win.payout * win.multiplier), 0);
+            setTotalWin(totalPayout);
+            
+            // 특수 결과 판정
+            const megaWin = totalPayout >= bet * 50;
+            const bigWin = totalPayout >= bet * 20;
+            const hasSpecialSymbol = wins.some(w => w.symbol === '🌟' || w.symbol === '💥');
+            
+            if (megaWin || hasSpecialSymbol) {
+              resultText = '🌟 MEGA WIN! 🌟';
+              newCombo = combo + 3;
+              if (soundOn) (Math.random() < 0.5 ? sounds.jackpot : sounds.jackpot2).play();
+              setEffect('jackpot-glow');
+              setLottieType('jackpot');
+              // 🎆 메가윈 잭팟 레이저쇼
+              particles.jackpot();
+              setTimeout(() => particles.coinRain(totalPayout), 1000);
+              setTimeout(() => setLottieType(null), 3000);
+            } else if (bigWin) {
+              resultText = '💰 BIG WIN! 💰';
+              newCombo = combo + 2;
+              if (soundOn) sounds.win.play();
+              setEffect('win-glow');
+              setLottieType('win');
+              // 🎉 빅윈 폭죽 효과
+              particles.celebrate('big');
+              particles.coinRain(totalPayout);
+              setTimeout(() => setLottieType(null), 2500);
+            } else {
+              resultText = `🎉 WIN x${wins.length}라인!`;
+              setLottieType('celebration');
+              newCombo = combo + 1;
+              if (soundOn) sounds.win.play();
+              setEffect('win-glow');
+              // 🎊 일반 승리 효과
+              setTimeout(() => setLottieType(null), 2000);
+              particles.celebrate('small');
+            }
+            
+            increaseBalance(totalPayout);
+            
+            // 점수 증가 이벤트 발생 (플로팅 효과용)
+            window.dispatchEvent(new CustomEvent('scoreIncrease', {
+              detail: { value: totalPayout, x: window.innerWidth / 2, y: window.innerHeight / 2 }
+            }));
+            
+            // 💎 특수 심볼 효과
+            if (hasSpecialSymbol) {
+              wins.forEach(win => {
+                if (win.symbol === '🌟') particles.special('wild');
+                if (win.symbol === '💥') particles.special('scatter');
+              });
+              
+              // 🎰 보너스 라운드 트리거 (특수 심볼 3개 이상)
+              const specialCount = finalReels.filter(symbol => symbol === '🌟' || symbol === '💥').length;
+              if (specialCount >= 3) {
+                setTimeout(() => {
+                  setLottieType('bonus');
+                  setTimeout(() => setLottieType(null), 4000);
+                }, 1500);
+              }
+            }
+            
+            // 🔥 콤보 효과
+            if (newCombo > 1) {
+              particles.combo(newCombo);
+            }
           } else {
             resultText = '꽝!';
             newCombo = 1;
             if (soundOn) sounds.fail.play();
             setEffect('fail-shake');
-            // 꽝은 배당 없음
           }
+          
           setResult(resultText);
-          setTimeout(() => setEffect(''), 1200);
-          setScore(score + addScore);
+          setTimeout(() => {
+            setEffect('');
+            setWinningLines([]);
+          }, 3000);
+          
+          setScore(score + totalPayout);
           setCombo(newCombo);
           // Firestore 기록 저장 (로그인 상태에서만)
           if (uid) {
             (async () => {
               await saveGameRun({
                 uid,
-                score: score + addScore,
+                score: score + totalPayout,
                 ballsUsed: 1,
                 combos: newCombo,
                 createdAt: new Date(),
               });
             })();
           }
-          // 오토스핀: 스핀 종료 후 자동 재시작 (잔고 충분, 오토스핀 활성화, 스핀 중 아님)
+          
+          // 오토스핀: 스핀 종료 후 자동 재시작
           if (autoSpin && balance >= bet) {
-            setTimeout(() => handleSpin(), 600); // 0.6초 후 자동 스핀
+            setTimeout(() => {
+              particles.autoSpin(); // 🔥 오토스핀 트레일 효과
+              handleSpin();
+            }, 1500);
           }
         }
         return;
       }
-      // 릴 심볼 변경
-      current[reelIdx] = getRandomSymbol();
-      setReels([...current]);
-      setTimeout(() => spinReel(reelIdx, count - 1), 60 + reelIdx * 30); // 릴별 속도 차이
+      
+      // 각 셀의 심볼을 실시간으로 변경 (스핀 애니메이션)
+      setReels(prevReels => {
+        const newReels = [...prevReels];
+        newReels[cellIdx] = getRandomSymbol();
+        return newReels;
+      });
+      
+      // 다음 스핀 프레임
+      setTimeout(() => spinCell(cellIdx, count - 1), 80 + (cellIdx % 3) * 15);
     }
 
-    for (let i = 0; i < REEL_COUNT; i++) {
-      spinReel(i, spinCounts[i]);
+    // 9개 셀 모두 시작
+    for (let i = 0; i < 9; i++) {
+      spinCell(i, spinCounts[i]);
     }
   };
 
   return (
     <>
       <TutorialModal open={showTutorial} onClose={() => setShowTutorial(false)} />
-      <div className="flex flex-col items-center gap-2 w-full max-w-md mx-auto">
-        <div className="w-full flex justify-end mb-2">
+      <PaytableModal isOpen={showPaytable} onClose={() => setShowPaytable(false)} />
+      <div className="flex flex-col items-center gap-4 w-full max-w-lg mx-auto px-4">
+        {/* 🎮 상단 컨트롤 패널 개선 */}
+        <div className="w-full flex justify-between items-center p-3 bg-gradient-to-r from-indigo-900/80 to-purple-900/80 rounded-2xl backdrop-blur-md shadow-xl border border-white/20">
+          <div className="flex gap-3">
+            <motion.button
+              onClick={() => setShowPaytable(true)}
+              className="px-3 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-xl font-semibold hover:from-amber-600 hover:to-orange-600 transition-all duration-300 shadow-lg flex items-center gap-2 text-sm whitespace-nowrap"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <span>💰</span>
+              <span>배당표</span>
+            </motion.button>
+            
+            {/* 3D 모드 토글 개선 */}
+            <motion.button
+              onClick={() => setIs3DMode(!is3DMode)}
+              className={`
+                px-3 py-2 rounded-xl font-semibold transition-all duration-300 shadow-lg flex items-center gap-2 text-sm whitespace-nowrap
+                ${is3DMode 
+                  ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white ring-2 ring-purple-300' 
+                  : 'bg-gradient-to-r from-slate-600 to-slate-700 text-white hover:from-slate-500 hover:to-slate-600'
+                }
+              `}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <span>{is3DMode ? '🌟' : '🎯'}</span>
+              <span>{is3DMode ? '3D' : '2D'}</span>
+            </motion.button>
+          </div>
+          
           <SoundVibrationToggle />
         </div>
-        <div className={`flex flex-col items-center gap-4 p-6 rounded-xl shadow-2xl w-full transition-all duration-500 card-hover glass-effect
-          ${effect === 'jackpot-glow' ? 'ring-4 ring-yellow-400 animate-gradient-shift animate-glow-pulse' : 'bg-gradient-to-br from-green-100 to-emerald-200 dark:from-gray-800 dark:to-gray-700'}
-          ${effect === 'win-glow' ? 'ring-2 ring-blue-300 bg-gradient-to-br from-blue-50 to-cyan-100 animate-shimmer' : ''}
-          ${effect === 'fail-shake' ? 'bg-gradient-to-br from-red-100 to-pink-200 animate-shake' : ''}
-        `}>
-          <div className="flex gap-6 text-7xl font-mono justify-center">
-            {reels.map((symbol, i) => (
-              <div key={i} className={`p-3 rounded-lg bg-white/20 backdrop-blur-sm border border-white/30 shadow-lg transform transition-all duration-300 ${spinning ? 'animate-spin' : 'hover:scale-110'}`}>
-                <span className={`block ${effect === 'jackpot-glow' ? 'neon-text text-yellow-400' : ''} ${effect === 'win-glow' ? 'neon-text text-blue-400' : ''}`}>
-                  {symbol}
-                </span>
-              </div>
-            ))}
-          </div>
-          <button
-            className="mt-6 px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-xl text-xl font-bold disabled:opacity-50 flex items-center gap-3 active:animate-btn-press transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 relative overflow-hidden"
-            onClick={handleSpin}
-            disabled={spinning || balance < bet}
-            aria-label="Spin"
-          >
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer"></div>
-            <span role="img" aria-label="slot" className="text-2xl">🎰</span>
-            <span className="relative z-10">{spinning ? '스핀 중...' : 'SPIN!'}</span>
-          </button>
-          {result && (
-            <div className={`mt-4 px-6 py-3 rounded-xl text-2xl font-bold shadow-lg transform transition-all duration-500 ${
-              result === 'JACKPOT!' ? 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white animate-float-up neon-text' :
-              result === '2개 일치!' ? 'bg-gradient-to-r from-blue-400 to-cyan-500 text-white animate-bounce' :
-              'bg-gradient-to-r from-gray-400 to-gray-600 text-white'
-            }`}>
-              {result}
-            </div>
+        
+        {/* 🎰 메인 게임 보드 개선 */}
+        <motion.div 
+          className={`flex flex-col items-center gap-6 p-6 rounded-3xl shadow-2xl w-full transition-all duration-500 backdrop-blur-md
+            ${effect === 'jackpot-glow' ? 'bg-gradient-to-br from-yellow-400/20 to-orange-500/20 ring-4 ring-yellow-400 animate-gradient-shift animate-glow-pulse border border-yellow-400/50' : 'bg-gradient-to-br from-slate-900/60 to-indigo-900/60 border border-white/20'}
+            ${effect === 'win-glow' ? 'bg-gradient-to-br from-blue-400/20 to-cyan-500/20 ring-2 ring-blue-300 animate-shimmer border border-blue-400/50' : ''}
+            ${effect === 'fail-shake' ? 'bg-gradient-to-br from-red-400/20 to-pink-500/20 animate-shake border border-red-400/50' : ''}
+          `}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          {/* 🎰 2D/3D 슬롯 그리드 조건부 렌더링 */}
+          {is3DMode ? (
+            /* 🌟 3D 슬롯머신 */
+            <motion.div
+              initial={{ opacity: 0, rotateY: -90 }}
+              animate={{ opacity: 1, rotateY: 0 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+            >
+              <Slot3DContainer
+                symbols={reels}
+                isSpinning={spinning}
+                winningLines={winningLines}
+              />
+            </motion.div>
+          ) : (
+            /* 🎯 2D Framer Motion 프리미엄 슬롯 그리드 */
+            <motion.div 
+              className="grid grid-cols-3 gap-3 p-4 bg-black/30 rounded-2xl backdrop-blur-sm border-2 border-gold/50"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
+            >
+              {reels.map((symbol, i) => {
+                const isWinning = winningLines.some(line => line.includes(i));
+                
+                return (
+                  <AnimatedSlotReel
+                    key={i}
+                    symbol={symbol}
+                    isSpinning={spinning}
+                    isWinning={isWinning}
+                    index={i}
+                  />
+                );
+              })}
+            </motion.div>
           )}
 
-          {balance <= 0 && (
-            <div className="mt-4 flex flex-col items-center gap-2 p-4 bg-red-50 border border-red-300 rounded-lg animate-pulse">
-              <div className="text-red-600 font-bold text-lg">잔고가 0원입니다!</div>
-              <button
-                className="px-4 py-2 bg-green-500 text-white rounded-lg font-bold hover:bg-green-600 transition"
-                onClick={() => setBalance(10000)}
+          {/* 💰 승리 정보 표시 개선 */}
+          {totalWin > 0 && !spinning && (
+            <motion.div 
+              className="w-full p-5 bg-gradient-to-r from-amber-400 via-yellow-500 to-orange-500 rounded-2xl shadow-2xl border-2 border-yellow-300/50 backdrop-blur-sm"
+              initial={{ scale: 0, y: 30, opacity: 0 }}
+              animate={{ 
+                scale: 1, 
+                y: 0, 
+                opacity: 1,
+                boxShadow: [
+                  '0 10px 40px rgba(255, 215, 0, 0.4)',
+                  '0 15px 60px rgba(255, 215, 0, 0.7)',
+                  '0 10px 40px rgba(255, 215, 0, 0.4)'
+                ]
+              }}
+              transition={{
+                duration: 0.8,
+                type: "spring",
+                stiffness: 200,
+                boxShadow: {
+                  duration: 2.5,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }
+              }}
+            >
+              <motion.div 
+                className="text-center text-white font-bold"
+                animate={{ scale: [1, 1.02, 1] }}
+                transition={{ duration: 2.5, repeat: Infinity }}
               >
-                잔고 10,000원으로 재시작
-              </button>
-            </div>
+                <motion.div 
+                  className="text-base mb-2 opacity-90"
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                >
+                  🎉 총 상금 🎉
+                </motion.div>
+                <motion.div 
+                  className="text-4xl font-black text-white drop-shadow-lg"
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: 0.3, type: "spring", stiffness: 300 }}
+                  style={{
+                    textShadow: '0 0 20px rgba(255,255,255,0.8), 0 0 40px rgba(255,215,0,0.6)'
+                  }}
+                >
+                  💰 {totalWin.toLocaleString()}원
+                </motion.div>
+                <motion.div 
+                  className="text-sm mt-2 bg-white/20 rounded-full px-4 py-1 inline-block"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                >
+                  ⚡ {winningLines.length}개 라인 승리!
+                </motion.div>
+              </motion.div>
+            </motion.div>
           )}
-        </div>
+          {/* 🎯 Framer Motion 스핀 버튼 */}
+          <AnimatedSpinButton
+            onClick={handleSpin}
+            disabled={spinning || balance < bet}
+            isSpinning={spinning}
+          />
+          
+          {/* 🎉 Framer Motion 결과 표시 */}
+          <AnimatedResult result={result} effect={effect} />
+
+          {/* 🎨 프리미엄 Lottie 애니메이션 오버레이 개선 */}
+          {lottieType && (
+            <motion.div 
+              className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-md"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.4 }}
+            >
+              <motion.div
+                className="relative p-8 rounded-3xl bg-gradient-to-br from-white/10 to-white/5 border border-white/20 shadow-2xl backdrop-blur-xl"
+                initial={{ scale: 0, rotate: -180, opacity: 0 }}
+                animate={{ scale: 1, rotate: 0, opacity: 1 }}
+                exit={{ scale: 0, rotate: 180, opacity: 0 }}
+                transition={{ 
+                  type: "spring", 
+                  stiffness: 300, 
+                  damping: 25,
+                  duration: 0.8 
+                }}
+              >
+                {/* 글로우 효과 */}
+                <motion.div
+                  className="absolute inset-0 rounded-3xl bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20"
+                  animate={{
+                    scale: [1, 1.05, 1],
+                    opacity: [0.3, 0.6, 0.3]
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                />
+                
+                <PremiumLottie 
+                  type={lottieType}
+                  size={320}
+                  speed={1.3}
+                  loop={true}
+                  autoplay={true}
+                />
+                
+                {/* 타입별 메시지 */}
+                <motion.div
+                  className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 px-6 py-2 bg-white/90 rounded-full shadow-lg"
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.5 }}
+                >
+                  <span className="text-sm font-bold text-gray-800">
+                    {lottieType === 'jackpot' && '🏆 메가 잭팟!'}
+                    {lottieType === 'win' && '🎉 빅 윈!'}
+                    {lottieType === 'celebration' && '✨ 축하합니다!'}
+                    {lottieType === 'bonus' && '🎁 보너스 라운드!'}
+                    {lottieType === 'spin' && '🌀 스피닝...'}
+                  </span>
+                </motion.div>
+              </motion.div>
+            </motion.div>
+          )}
+
+          {/* 💸 잔고 부족 알림 개선 */}
+          {balance <= 0 && (
+            <motion.div 
+              className="w-full flex flex-col items-center gap-4 p-6 bg-gradient-to-r from-red-500/20 to-pink-500/20 border-2 border-red-400/50 rounded-2xl backdrop-blur-md shadow-xl"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5 }}
+            >
+              <motion.div 
+                className="text-red-300 font-bold text-xl text-center"
+                animate={{ scale: [1, 1.05, 1] }}
+                transition={{ duration: 1.5, repeat: Infinity }}
+              >
+                💸 잔고가 부족합니다!
+              </motion.div>
+              <motion.button
+                className="px-6 py-3 bg-gradient-to-r from-emerald-500 to-green-600 text-white rounded-xl font-bold hover:from-emerald-600 hover:to-green-700 transition-all duration-300 shadow-lg"
+                onClick={() => setBalance(10000)}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                🎰 잔고 10,000원으로 재시작
+              </motion.button>
+            </motion.div>
+          )}
+        </motion.div>
       </div>
     </>
   );

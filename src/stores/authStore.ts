@@ -4,7 +4,7 @@ interface AuthState {
   uid: string | null;
   isAnonymous: boolean;
   loading: boolean;
-  setAuth: (uid: string, isAnonymous: boolean) => void;
+  setAuth: (uid: string | null, isAnonymous: boolean) => void;
   setLoading: (loading: boolean) => void;
 }
 

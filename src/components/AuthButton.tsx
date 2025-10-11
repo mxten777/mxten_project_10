@@ -12,7 +12,7 @@ export const AuthButton: React.FC = () => {
       if (user) {
         setAuth(user.uid, user.isAnonymous);
       } else {
-        setAuth(null as any, false);
+        setAuth(null, false);
       }
       setLoading(false);
     });

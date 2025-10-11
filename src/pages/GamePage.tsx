@@ -12,26 +12,34 @@ import ScoreEffectSystem from '../components/ScoreEffectSystem';
 const GamePage: React.FC = () => {
   return (
     <ScoreEffectSystem>
-      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 p-4">
-        <div className="flex flex-col items-center gap-6 max-w-4xl mx-auto">
+      <div className="min-h-screen p-6">
+        <div className="flex flex-col items-center gap-8 max-w-5xl mx-auto">
           {/* 헤더 영역 */}
-          <div className="w-full flex justify-between items-center mb-4">
+          <div className="w-full flex justify-between items-center p-4 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-xl">
             <div className="flex items-center gap-4">
-              <h1 className="text-3xl font-bold text-white neon-text">🎰 파칭코 슬롯</h1>
+              <h1 className="text-4xl font-bold text-white drop-shadow-lg">
+                🎰 <span className="bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">프리미엄 슬롯</span>
+              </h1>
             </div>
             <AuthButton />
           </div>
 
-          {/* 상단 정보 영역 */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-2xl">
-            <ScoreBoard />
-            <ComboDisplay />
+          {/* 상단 정보 영역 개선 */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-3xl">
+            <div className="glass-morphism rounded-2xl p-1">
+              <ScoreBoard />
+            </div>
+            <div className="glass-morphism rounded-2xl p-1">
+              <ComboDisplay />
+            </div>
           </div>
 
-          {/* 베팅 및 컨트롤 영역 */}
-          <div className="flex flex-col gap-4 w-full max-w-2xl">
-            <BettingPanel />
-            <div className="flex justify-center">
+          {/* 베팅 및 컨트롤 영역 개선 */}
+          <div className="flex flex-col gap-6 w-full max-w-3xl">
+            <div className="glass-morphism rounded-2xl p-1">
+              <BettingPanel />
+            </div>
+            <div className="flex justify-center glass-morphism rounded-2xl p-4">
               <AutoSpinToggle />
             </div>
           </div>
