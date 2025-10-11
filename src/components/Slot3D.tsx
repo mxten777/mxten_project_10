@@ -61,13 +61,15 @@ const Slot3DReel: React.FC<Slot3DReelProps> = ({
         />
       </mesh>
 
-      {/* 3D 평면 심볼 (임시) */}
-      <mesh position={[0, 0, 0.8]}>
-        <planeGeometry args={[1.5, 1.5]} />
+      {/* 3D 심볼 표면 */}
+      <mesh position={[0, 0, 0.16]} rotation={[0, 0, 0]}>
+        <cylinderGeometry args={[0.9, 0.9, 0.05, 32]} />
         <meshStandardMaterial 
-          color="white"
-          emissive={isWinning ? '#ffffff' : '#000000'}
-          emissiveIntensity={isWinning ? 0.3 : 0}
+          color="#ffffff"
+          metalness={0.1}
+          roughness={0.1}
+          emissive={isWinning ? '#ffff00' : '#000000'}
+          emissiveIntensity={isWinning ? 0.2 : 0}
         />
       </mesh>
 
@@ -198,7 +200,7 @@ export const Slot3DContainer: React.FC<Slot3DContainerProps> = ({
   winningLines
 }) => {
   return (
-    <div className="w-full h-96 rounded-xl overflow-hidden border-2 border-purple-500 shadow-2xl">
+    <div className="relative w-full h-96 rounded-xl overflow-hidden border-2 border-purple-500 shadow-2xl">
       <Canvas
         camera={{ 
           position: [0, 0, 10], 
@@ -227,6 +229,28 @@ export const Slot3DContainer: React.FC<Slot3DContainerProps> = ({
           winningLines={winningLines}
         />
       </Canvas>
+      
+      {/* 심볼 오버레이 */}
+      <div className="absolute inset-0 grid grid-cols-3 gap-1 p-8 pointer-events-none">
+        {symbols.map((symbol, index) => {
+          const isWinning = winningLines.some(line => line.includes(index));
+          return (
+            <div 
+              key={index} 
+              className={`flex items-center justify-center text-4xl font-bold transition-all duration-300 ${
+                isWinning ? 'animate-pulse scale-110 text-yellow-300 drop-shadow-lg' : 'text-white'
+              }`}
+              style={{
+                textShadow: isWinning ? '0 0 20px rgba(255,255,0,0.8)' : '2px 2px 4px rgba(0,0,0,0.5)',
+                transform: isSpinning ? 'rotateY(180deg)' : 'rotateY(0deg)',
+                filter: isWinning ? 'brightness(1.5)' : 'brightness(1)'
+              }}
+            >
+              {symbol}
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 };

@@ -136,13 +136,13 @@ const PAYLINES = [
   [2, 4, 6]  // 대각선 2
 ];
 
-// 가중치가 적용된 랜덤 심볼 생성
+// 가중치가 적용된 랜덤 심볼 생성 - 더 균등한 분포
 function getWeightedRandomSymbol(): string {
   const random = Math.random();
-  if (random < 0.4) return SYMBOLS.low[Math.floor(Math.random() * SYMBOLS.low.length)];
-  if (random < 0.7) return SYMBOLS.medium[Math.floor(Math.random() * SYMBOLS.medium.length)];
-  if (random < 0.95) return SYMBOLS.high[Math.floor(Math.random() * SYMBOLS.high.length)];
-  return SYMBOLS.special[Math.floor(Math.random() * SYMBOLS.special.length)];
+  if (random < 0.45) return SYMBOLS.low[Math.floor(Math.random() * SYMBOLS.low.length)];      // 45% - 저배당
+  if (random < 0.75) return SYMBOLS.medium[Math.floor(Math.random() * SYMBOLS.medium.length)]; // 30% - 중배당
+  if (random < 0.92) return SYMBOLS.high[Math.floor(Math.random() * SYMBOLS.high.length)];     // 17% - 고배당
+  return SYMBOLS.special[Math.floor(Math.random() * SYMBOLS.special.length)];                  // 8% - 특수
 }
 
 function getRandomSymbols() {
