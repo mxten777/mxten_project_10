@@ -199,6 +199,11 @@ export const Slot3DContainer: React.FC<Slot3DContainerProps> = ({
   isSpinning,
   winningLines
 }) => {
+  // 디버깅: 심볼 확인
+  React.useEffect(() => {
+    console.log('3D Mode Symbols:', symbols);
+  }, [symbols]);
+
   return (
     <div className="relative w-full h-96 rounded-xl overflow-hidden border-2 border-purple-500 shadow-2xl">
       <Canvas
@@ -230,23 +235,27 @@ export const Slot3DContainer: React.FC<Slot3DContainerProps> = ({
         />
       </Canvas>
       
-      {/* 심볼 오버레이 */}
+      {/* 심볼 오버레이 - 개선된 이모지 표시 */}
       <div className="absolute inset-0 grid grid-cols-3 gap-1 p-8 pointer-events-none">
         {symbols.map((symbol, index) => {
           const isWinning = winningLines.some(line => line.includes(index));
           return (
             <div 
               key={index} 
-              className={`flex items-center justify-center text-4xl font-bold transition-all duration-300 ${
+              className={`flex items-center justify-center text-5xl font-bold transition-all duration-300 ${
                 isWinning ? 'animate-pulse scale-110 text-yellow-300 drop-shadow-lg' : 'text-white'
               }`}
               style={{
-                textShadow: isWinning ? '0 0 20px rgba(255,255,0,0.8)' : '2px 2px 4px rgba(0,0,0,0.5)',
+                fontFamily: '"Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif',
+                textShadow: isWinning ? '0 0 20px rgba(255,255,0,0.8), 0 0 40px rgba(255,255,0,0.4)' : '3px 3px 6px rgba(0,0,0,0.8)',
                 transform: isSpinning ? 'rotateY(180deg)' : 'rotateY(0deg)',
-                filter: isWinning ? 'brightness(1.5)' : 'brightness(1)'
-              }}
+                filter: isWinning ? 'brightness(1.5) saturate(1.2)' : 'brightness(1.1)',
+                WebkitTextStroke: '1px rgba(0,0,0,0.5)',
+                userSelect: 'none',
+                WebkitUserSelect: 'none'
+              } as React.CSSProperties}
             >
-              {symbol}
+              {symbol || '❓'}
             </div>
           );
         })}
