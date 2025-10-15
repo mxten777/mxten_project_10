@@ -17,11 +17,16 @@ const ScoreBoard: React.FC = () => {
 
   return (
     <div
-      className={`p-3 sm:p-4 bg-gradient-to-r from-purple-500 to-pink-500 dark:from-purple-700 dark:to-pink-700 rounded-xl shadow-lg font-bold text-lg sm:text-xl text-white backdrop-blur-sm border border-white/20 transition-all duration-300 card-hover ${anim ? 'animate-score-jump animate-glow-pulse' : ''}`}
+      className={`p-5 sm:p-6 lg:p-7 bg-gradient-to-r from-purple-600 via-purple-500 to-pink-600 rounded-2xl shadow-2xl font-bold text-white backdrop-blur-sm border-2 border-purple-400/30 transition-all duration-300 ${anim ? 'animate-score-jump animate-glow-pulse' : ''}`}
     >
-      <div className="flex items-center justify-center sm:justify-start gap-2">
-        <span className="text-xl sm:text-2xl">🏆</span>
-        <span className="neon-text text-base sm:text-xl">점수: {score.toLocaleString()}</span>
+      <div className="flex items-center justify-center gap-4">
+        <span className="text-3xl sm:text-4xl lg:text-5xl">🏆</span>
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+          <span className="text-base sm:text-lg lg:text-xl text-purple-100 font-semibold">점수:</span>
+          <span className="text-2xl sm:text-3xl lg:text-4xl font-black text-white drop-shadow-lg text-center sm:text-left">
+            {score.toLocaleString()}
+          </span>
+        </div>
       </div>
     </div>
   );

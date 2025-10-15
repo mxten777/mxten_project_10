@@ -18,12 +18,12 @@ export const AnimatedSlotReel: React.FC<AnimatedSlotReelProps> = ({
   return (
     <motion.div
       className={`
-        relative w-20 h-20 md:w-24 md:h-24 rounded-2xl overflow-hidden
+        relative w-full aspect-square rounded-xl sm:rounded-2xl overflow-hidden
         ${isSpinning 
-          ? 'bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 shadow-[0_0_30px_rgba(168,85,247,0.6)]' 
-          : 'bg-gradient-to-br from-slate-800 via-slate-700 to-slate-600 border-2 border-slate-500/50'
+          ? 'bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 shadow-[0_0_30px_rgba(99,102,241,0.6)]' 
+          : 'bg-gradient-to-br from-gray-700 via-gray-800 to-gray-900 border-2 border-gray-600/70'
         }
-        ${isWinning ? 'ring-4 ring-yellow-400 shadow-[0_0_40px_rgba(255,215,0,0.8)]' : 'shadow-lg'}
+        ${isWinning ? 'ring-4 ring-yellow-400 shadow-[0_0_40px_rgba(255,215,0,0.8)] bg-gradient-to-br from-yellow-500/20 to-orange-500/20' : 'shadow-2xl'}
       `}
       initial={{ scale: 0, opacity: 0, rotateY: -180 }}
       animate={{ 
@@ -56,7 +56,7 @@ export const AnimatedSlotReel: React.FC<AnimatedSlotReelProps> = ({
       <div className="flex items-center justify-center h-full relative z-10">
         <motion.span
           className={`
-            text-3xl md:text-4xl font-bold
+            text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold
             ${isSpinning ? 'text-white' : 'text-white'}
             ${isWinning ? 'drop-shadow-[0_0_10px_rgba(255,215,0,0.8)]' : 'drop-shadow-lg'}
           `}
@@ -117,22 +117,26 @@ export const AnimatedResult: React.FC<AnimatedResultProps> = ({ result, effect }
 interface AnimatedSpinButtonProps {
   onClick: () => void;
   disabled: boolean;
-  isSpinning: boolean;
+  spinning: boolean;
+  balance: number;
+  bet: number;
 }
 
 export const AnimatedSpinButton: React.FC<AnimatedSpinButtonProps> = ({
   onClick,
   disabled,
-  isSpinning
+  spinning,
+  balance,
+  bet
 }) => {
   return (
     <motion.button
       className={`
-        relative mt-6 px-10 py-4 rounded-2xl text-xl font-bold
-        flex items-center justify-center gap-3 overflow-hidden
+        relative px-8 sm:px-12 py-4 sm:py-5 rounded-2xl text-lg sm:text-xl font-black
+        flex items-center justify-center gap-3 sm:gap-4 overflow-hidden min-w-[180px] sm:min-w-[220px]
         ${disabled 
           ? 'bg-gradient-to-r from-gray-500 to-gray-600 cursor-not-allowed opacity-50' 
-          : isSpinning
+          : spinning
             ? 'bg-gradient-to-r from-orange-500 via-red-500 to-pink-600 shadow-[0_0_40px_rgba(236,72,153,0.6)]'
             : 'bg-gradient-to-r from-emerald-500 via-blue-500 to-purple-600 shadow-[0_0_30px_rgba(59,130,246,0.5)] hover:shadow-[0_0_50px_rgba(59,130,246,0.8)]'
         }
@@ -146,7 +150,7 @@ export const AnimatedSpinButton: React.FC<AnimatedSpinButtonProps> = ({
         boxShadow: "0 0 60px rgba(59,130,246,0.8)"
       } : {}}
       whileTap={!disabled ? { scale: 0.95 } : {}}
-      animate={!disabled && !isSpinning ? {
+      animate={!disabled && !spinning ? {
         boxShadow: [
           "0 0 30px rgba(59,130,246,0.5)",
           "0 0 50px rgba(59,130,246,0.8)",
@@ -161,9 +165,9 @@ export const AnimatedSpinButton: React.FC<AnimatedSpinButtonProps> = ({
       {!disabled && (
         <motion.div
           className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
-          animate={isSpinning ? { x: [-200, 200] } : { x: [-200, 200] }}
+          animate={spinning ? { x: [-200, 200] } : { x: [-200, 200] }}
           transition={{
-            duration: isSpinning ? 1 : 3,
+            duration: spinning ? 1 : 3,
             repeat: Infinity,
             ease: "linear"
           }}
@@ -171,32 +175,32 @@ export const AnimatedSpinButton: React.FC<AnimatedSpinButtonProps> = ({
       )}
       
       <motion.span 
-        className="text-3xl relative z-10"
-        animate={isSpinning ? { 
+        className="text-2xl sm:text-3xl relative z-10"
+        animate={spinning ? { 
           rotate: 360,
           scale: [1, 1.2, 1]
         } : {
           rotate: [0, 5, -5, 0]
         }}
         transition={{
-          duration: isSpinning ? 0.5 : 2,
+          duration: spinning ? 0.5 : 2,
           repeat: Infinity,
-          ease: isSpinning ? "linear" : "easeInOut"
+          ease: spinning ? "linear" : "easeInOut"
         }}
       >
         🎰
       </motion.span>
       <motion.span 
         className="relative z-10 tracking-wide"
-        animate={isSpinning ? {
+        animate={spinning ? {
           color: ["#ffffff", "#fbbf24", "#ffffff"]
         } : {}}
         transition={{
           duration: 0.8,
-          repeat: isSpinning ? Infinity : 0
+          repeat: spinning ? Infinity : 0
         }}
       >
-        {isSpinning ? '⚡ 스피닝...' : '🚀 SPIN!'}
+        {disabled && balance < bet ? '💸 잔고 부족' : spinning ? '⚡ 스피닝...' : '🚀 SPIN!'}
       </motion.span>
     </motion.button>
   );

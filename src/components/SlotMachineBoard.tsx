@@ -407,46 +407,46 @@ const SlotMachineBoard: React.FC = () => {
     <>
       <TutorialModal open={showTutorial} onClose={() => setShowTutorial(false)} />
       <PaytableModal isOpen={showPaytable} onClose={() => setShowPaytable(false)} />
-      <div className="flex flex-col items-center gap-3 sm:gap-4 w-full max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl mx-auto px-2 sm:px-4">
-        {/* 🎮 상단 컨트롤 패널 - 모바일 최적화 */}
-        <div className="w-full flex flex-col sm:flex-row justify-between items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-gradient-to-r from-indigo-900/80 to-purple-900/80 rounded-xl sm:rounded-2xl backdrop-blur-md shadow-xl border border-white/20">
-          <div className="flex gap-2 sm:gap-3 w-full sm:w-auto justify-center sm:justify-start">
+      <div className="flex flex-col items-center gap-5 sm:gap-6 md:gap-8 w-full max-w-lg sm:max-w-xl md:max-w-2xl lg:max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* 🎮 상단 컨트롤 패널 - 완벽한 정렬 */}
+        <div className="w-full flex flex-col sm:flex-row justify-between items-center gap-4 sm:gap-6 p-4 sm:p-5 lg:p-6 bg-gradient-to-r from-indigo-900/80 to-purple-900/80 rounded-2xl sm:rounded-3xl backdrop-blur-md shadow-2xl border border-white/20">
+          <div className="flex gap-3 sm:gap-4 w-full sm:w-auto justify-center sm:justify-start">
             <motion.button
               onClick={() => setShowPaytable(true)}
-              className="px-2 sm:px-3 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-lg sm:rounded-xl font-semibold hover:from-amber-600 hover:to-orange-600 transition-all duration-300 shadow-lg flex items-center gap-1 sm:gap-2 text-xs sm:text-sm whitespace-nowrap min-h-[40px]"
+              className="px-4 sm:px-5 py-3 sm:py-4 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-xl sm:rounded-2xl font-bold hover:from-amber-600 hover:to-orange-600 transition-all duration-300 shadow-xl flex items-center gap-2 sm:gap-3 text-sm sm:text-base lg:text-lg whitespace-nowrap min-h-[44px] sm:min-h-[48px]"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <span>💰</span>
+              <span className="text-lg sm:text-xl">💰</span>
               <span>배당표</span>
             </motion.button>
             
-            {/* 3D 모드 토글 - 모바일 최적화 */}
+            {/* 3D 모드 토글 - 완벽한 정렬 */}
             <motion.button
               onClick={() => setIs3DMode(!is3DMode)}
               className={`
-                px-2 sm:px-3 py-2 rounded-lg sm:rounded-xl font-semibold transition-all duration-300 shadow-lg flex items-center gap-1 sm:gap-2 text-xs sm:text-sm whitespace-nowrap min-h-[40px]
+                px-4 sm:px-5 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-bold transition-all duration-300 shadow-xl flex items-center gap-2 sm:gap-3 text-sm sm:text-base lg:text-lg whitespace-nowrap min-h-[44px] sm:min-h-[48px]
                 ${is3DMode 
-                  ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white ring-2 ring-purple-300' 
+                  ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white ring-2 ring-purple-300 shadow-purple-400/30' 
                   : 'bg-gradient-to-r from-slate-600 to-slate-700 text-white hover:from-slate-500 hover:to-slate-600'
                 }
               `}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <span>{is3DMode ? '🌟' : '🎯'}</span>
+              <span className="text-lg sm:text-xl">{is3DMode ? '🌟' : '🎯'}</span>
               <span>{is3DMode ? '3D' : '2D'}</span>
             </motion.button>
           </div>
           
-          <div className="w-full sm:w-auto flex justify-center">
+          <div className="w-full sm:w-auto flex justify-center sm:justify-end">
             <SoundVibrationToggle />
           </div>
         </div>
         
-        {/* 🎰 메인 게임 보드 - 모바일 최적화 */}
+        {/* 🎰 메인 게임 보드 - 완벽한 중앙 정렬 */}
         <motion.div 
-          className={`flex flex-col items-center gap-4 sm:gap-5 md:gap-6 p-4 sm:p-5 md:p-6 rounded-2xl sm:rounded-3xl shadow-2xl w-full transition-all duration-500 backdrop-blur-md
+          className={`flex flex-col items-center gap-6 sm:gap-7 md:gap-8 p-6 sm:p-7 md:p-8 lg:p-10 rounded-3xl sm:rounded-4xl shadow-2xl w-full transition-all duration-500 backdrop-blur-md
             ${effect === 'jackpot-glow' ? 'bg-gradient-to-br from-yellow-400/20 to-orange-500/20 ring-2 sm:ring-4 ring-yellow-400 animate-gradient-shift animate-glow-pulse border border-yellow-400/50' : 'bg-gradient-to-br from-slate-900/60 to-indigo-900/60 border border-white/20'}
             ${effect === 'win-glow' ? 'bg-gradient-to-br from-blue-400/20 to-cyan-500/20 ring-2 ring-blue-300 animate-shimmer border border-blue-400/50' : ''}
             ${effect === 'fail-shake' ? 'bg-gradient-to-br from-red-400/20 to-pink-500/20 animate-shake border border-red-400/50' : ''}
@@ -470,9 +470,9 @@ const SlotMachineBoard: React.FC = () => {
               />
             </motion.div>
           ) : (
-            /* 🎯 2D Framer Motion 프리미엄 슬롯 그리드 - 모바일 최적화 */
+            /* 🎯 2D Framer Motion 프리미엄 슬롯 그리드 - 완벽한 균형감 */
             <motion.div 
-              className="grid grid-cols-3 gap-3 sm:gap-4 md:gap-5 p-4 sm:p-5 md:p-6 bg-black/30 rounded-xl sm:rounded-2xl backdrop-blur-sm border-2 border-gold/50"
+              className="grid grid-cols-3 gap-3 sm:gap-4 p-6 sm:p-8 bg-gradient-to-br from-slate-800/80 to-slate-900/90 rounded-2xl sm:rounded-3xl backdrop-blur-sm border-2 border-slate-600/50 shadow-2xl aspect-square max-w-sm sm:max-w-md mx-auto"
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.6, ease: "easeOut" }}
@@ -554,14 +554,7 @@ const SlotMachineBoard: React.FC = () => {
               </motion.div>
             </motion.div>
           )}
-          {/* 🎯 Framer Motion 스핀 버튼 */}
-          <AnimatedSpinButton
-            onClick={handleSpin}
-            disabled={spinning || balance < bet}
-            isSpinning={spinning}
-          />
-          
-          {/* 🎉 Framer Motion 결과 표시 */}
+          {/*  Framer Motion 결과 표시 */}
           <AnimatedResult result={result} effect={effect} />
 
           {/* 🎨 프리미엄 Lottie 애니메이션 오버레이 개선 */}
@@ -625,6 +618,22 @@ const SlotMachineBoard: React.FC = () => {
               </motion.div>
             </motion.div>
           )}
+
+          {/* 🎯 스핀 버튼 - 완벽한 중앙 정렬 */}
+          <motion.div 
+            className="w-full max-w-sm mx-auto flex justify-center mt-4"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            <AnimatedSpinButton
+              onClick={handleSpin}
+              disabled={spinning || balance < bet}
+              spinning={spinning}
+              balance={balance}
+              bet={bet}
+            />
+          </motion.div>
 
           {/* 💸 잔고 부족 알림 개선 */}
           {balance <= 0 && (
