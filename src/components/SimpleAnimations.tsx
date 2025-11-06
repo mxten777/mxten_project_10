@@ -41,8 +41,8 @@ export const AnimatedSlotReel: React.FC<AnimatedSlotReelProps> = ({
       whileHover={{ scale: 1.05, rotateY: 5 }}
       whileTap={{ scale: 0.95 }}
     >
-      {/* 글래스 오버레이 효과 */}
-      <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent pointer-events-none" />
+      {/* Glass Morphism 오버레이 효과 */}
+      <div className="absolute inset-0 bg-white/10 rounded-xl sm:rounded-2xl backdrop-blur-md pointer-events-none" />
       
       {/* 스피닝 로딩 효과 */}
       {isSpinning && (

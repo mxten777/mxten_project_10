@@ -296,14 +296,25 @@ export const PremiumLottie: React.FC<PremiumLottieProps> = ({
       if (progress >= 2 && !loop) {
         setIsPlaying(false);
         onComplete?.();
-        return;
-      }
-
-      if (isPlaying) {
-        if (loop && progress >= 2) {
-          startTimeRef.current = timestamp;
-        }
-        animationRef.current = requestAnimationFrame(animate);
+        return (
+          <div style={{ position: 'relative', width: size, height: size }}>
+            {/* Glass Morphism 오버레이 */}
+            <div style={{
+              position: 'absolute',
+              inset: 0,
+              borderRadius: size / 10,
+              background: 'rgba(255,255,255,0.12)',
+              backdropFilter: 'blur(12px)',
+              zIndex: 0
+            }} />
+            <canvas
+              ref={canvasRef}
+              width={size}
+              height={size}
+              style={{ width: size, height: size, borderRadius: size / 10, boxShadow: '0 4px 32px rgba(0,0,0,0.18)', position: 'relative', zIndex: 1 }}
+            />
+          </div>
+        );
       }
     };
 

@@ -49,15 +49,26 @@ const Slot3DReel: React.FC<Slot3DReelProps> = ({
 
   return (
     <group ref={groupRef} position={position}>
+      {/* Glass Morphism 오버레이 */}
+      <mesh position={[0, 0, 0.18]}>
+        <cylinderGeometry args={[1.05, 1.05, 0.32, 32]} />
+        <meshStandardMaterial 
+          color={'#ffffff'}
+          transparent={true}
+          opacity={0.18}
+          metalness={0.9}
+          roughness={0.1}
+        />
+      </mesh>
       {/* 메인 릴 실린더 */}
       <mesh ref={meshRef}>
         <cylinderGeometry args={[1, 1, 0.3, 32]} />
         <meshStandardMaterial 
           color={getSymbolColor(symbol)}
-          metalness={0.7}
-          roughness={0.2}
+          metalness={0.8}
+          roughness={0.18}
           emissive={isWinning ? getSymbolColor(symbol) : '#000000'}
-          emissiveIntensity={isWinning ? 0.3 : 0}
+          emissiveIntensity={isWinning ? 0.4 : 0}
         />
       </mesh>
 
