@@ -17,11 +17,14 @@ const ComboDisplay: React.FC = () => {
 
   return (
     <div
-      className={`p-3 sm:p-4 bg-gradient-to-r from-orange-400 to-red-500 dark:from-orange-600 dark:to-red-700 rounded-xl shadow-lg font-bold text-lg sm:text-xl text-white backdrop-blur-sm border border-white/20 transition-all duration-300 card-hover ${anim ? 'animate-score-jump animate-shimmer' : ''}`}
+      className={`p-8 bg-gradient-to-r from-orange-400 to-red-500 dark:from-orange-600 dark:to-red-700 rounded-3xl shadow-2xl font-bold text-white backdrop-blur-sm border border-white/20 transition-all duration-300 w-full min-h-[200px] flex flex-col justify-center items-center ${anim ? 'animate-score-jump animate-shimmer' : ''}`}
     >
-      <div className="flex items-center justify-center sm:justify-start gap-2">
-        <span className="text-xl sm:text-2xl animate-bounce">⚡</span>
-        <span className="neon-text text-base sm:text-xl">콤보: x{combo}</span>
+      <div className="flex flex-col items-center justify-center gap-4">
+        <div className="flex items-center gap-4">
+          <span className="text-6xl animate-bounce">⚡</span>
+          <span className="text-4xl font-bold">콤보</span>
+        </div>
+        <span className="neon-text text-6xl font-black">x{combo}</span>
       </div>
     </div>
   );

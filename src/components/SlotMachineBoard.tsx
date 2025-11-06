@@ -307,14 +307,7 @@ const SlotMachineBoard: React.FC = () => {
     <>
       <TutorialModal open={showTutorial} onClose={() => setShowTutorial(false)} />
       <PaytableModal isOpen={showPaytable} onClose={() => setShowPaytable(false)} />
-      {/* 신규 기능: 리더보드, 점수판, 콤보 표시 */}
-      <div className="w-full flex flex-col md:flex-row gap-4 mb-4">
-        <Leaderboard />
-        <ScoreBoard />
-        <ComboDisplay />
-        {/* 업적/보상 현황 표시 */}
-        <AchievementBoard />
-      </div>
+
       <div className="flex flex-col items-center gap-5 sm:gap-6 md:gap-8 w-full max-w-lg sm:max-w-xl md:max-w-2xl lg:max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* 미션/챌린지 모드 현황 표시 */}
         {(gameMode === 'mission' || gameMode === 'challenge') && (
@@ -648,6 +641,11 @@ const SlotMachineBoard: React.FC = () => {
             </motion.div>
           )}
         </motion.div>
+        
+        {/* 하단 정보 패널 */}
+        <div className="w-full flex justify-center mt-6 max-w-2xl mx-auto">
+          <AchievementBoard />
+        </div>
       </div>
     </>
   );

@@ -17,16 +17,16 @@ const ScoreBoard: React.FC = () => {
 
   return (
     <div
-      className={`p-5 sm:p-6 lg:p-7 bg-gradient-to-r from-purple-600 via-purple-500 to-pink-600 rounded-2xl shadow-2xl font-bold text-white backdrop-blur-sm border-2 border-purple-400/30 transition-all duration-300 ${anim ? 'animate-score-jump animate-glow-pulse' : ''}`}
+      className={`p-8 bg-gradient-to-r from-purple-600 via-purple-500 to-pink-600 rounded-3xl shadow-2xl font-bold text-white backdrop-blur-sm border border-purple-400/30 transition-all duration-300 w-full min-h-[200px] flex flex-col justify-center items-center ${anim ? 'animate-score-jump animate-glow-pulse' : ''}`}
     >
-      <div className="flex items-center justify-center gap-4">
-        <span className="text-3xl sm:text-4xl lg:text-5xl">🏆</span>
-        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
-          <span className="text-base sm:text-lg lg:text-xl text-purple-100 font-semibold">점수:</span>
-          <span className="text-2xl sm:text-3xl lg:text-4xl font-black text-white drop-shadow-lg text-center sm:text-left">
-            {score.toLocaleString()}
-          </span>
+      <div className="flex flex-col items-center justify-center gap-4">
+        <div className="flex items-center gap-4">
+          <span className="text-6xl">🏆</span>
+          <span className="text-4xl text-purple-100 font-bold">점수</span>
         </div>
+        <span className="text-6xl font-black text-white drop-shadow-lg text-center">
+          {score.toLocaleString()}
+        </span>
       </div>
     </div>
   );

@@ -3,7 +3,8 @@ import { useAchievementStore } from '../stores/achievementStore';
 
 const confettiColors = ['#FFD700', '#FF69B4', '#90EE90', '#00BFFF', '#FF6347'];
 const playAchievementSound = () => {
-  const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+  const AudioContextClass = window.AudioContext || (window as typeof window & { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+  const ctx = new AudioContextClass();
   const o = ctx.createOscillator();
   const g = ctx.createGain();
   o.type = 'triangle';
@@ -37,25 +38,23 @@ const AchievementBoard: React.FC = () => {
   }, [achievements]);
 
   return (
-    <div className="w-full p-4 rounded-xl bg-gradient-to-r from-yellow-100/40 to-pink-100/40 border border-yellow-300/30 shadow-lg flex flex-col gap-3 mb-4 relative">
-      <div className="font-bold text-lg text-yellow-700 mb-2">업적 현황</div>
+    <div className="w-full p-8 rounded-3xl bg-gradient-to-r from-yellow-100/40 to-pink-100/40 border border-yellow-300/30 shadow-lg flex flex-col justify-center items-center relative">
+      <div className="font-bold text-5xl text-yellow-700 mb-6 flex items-center gap-4">
+        <span className="text-6xl">🏆</span>
+        <span>업적 현황</span>
+      </div>
       {/* Confetti 애니메이션 오버레이 */}
       <div ref={confettiRef} className="pointer-events-none absolute inset-0 z-10">
         {/* 간단한 confetti 효과 (tailwind animate-spin 등 활용) */}
         <div className="absolute left-1/2 top-2 flex gap-2 -translate-x-1/2">
           {confettiColors.map((c, i) => (
-            <div key={i} style={{ background: c }} className="w-3 h-3 rounded-full animate-bounce" />
+            <div key={i} style={{ background: c }} className="w-2 h-2 rounded-full animate-bounce" />
           ))}
         </div>
       </div>
-      {achievements.map(a => (
-        <div key={a.id} className={`flex items-center gap-3 p-2 rounded-lg ${a.achieved ? 'bg-green-100/60' : 'bg-gray-100/40'}`}>
-          <span className={`font-bold ${a.achieved ? 'text-green-700' : 'text-gray-700'}`}>{a.name}</span>
-          <span className="text-sm text-gray-500">{a.description}</span>
-          <span className="ml-auto text-xs px-2 py-1 rounded bg-yellow-200/60 text-yellow-800">{a.reward}</span>
-          {a.achieved && <span className="ml-2 text-green-500 font-bold">달성!</span>}
-        </div>
-      ))}
+      <div className="text-center text-6xl font-black text-gray-700">
+        {achievements.filter(a => a.achieved).length}/{achievements.length} 달성
+      </div>
     </div>
   );
 };
