@@ -22,9 +22,6 @@ import { motion } from 'framer-motion';
 import PremiumLottie from './PremiumLottie';
 import { getRandomSymbols, getRandomSymbol, checkWinningCombinations } from '../utils/slotConstants';
 import { createBeepSound, createMelodySound } from '../utils/soundUtils';
-import Leaderboard from './Leaderboard';
-import ScoreBoard from './ScoreBoard';
-import ComboDisplay from './ComboDisplay';
 import GameModeSelector from './GameModeSelector';
 import type { GameMode } from './GameModeSelector';
 
