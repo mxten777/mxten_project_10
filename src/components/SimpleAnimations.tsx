@@ -15,6 +15,8 @@ export const AnimatedSlotReel: React.FC<AnimatedSlotReelProps> = ({
   isWinning,
   index
 }) => {
+  // 파친코 스타일: 각 행의 마지막 릴(2,5,8)만 특별 애니메이션
+  const isLastInRow = index % 3 === 2;
   return (
     <motion.div
       className={`
@@ -56,19 +58,37 @@ export const AnimatedSlotReel: React.FC<AnimatedSlotReelProps> = ({
       <div className="flex items-center justify-center h-full relative z-10">
         <motion.span
           className={`
-            text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold
-            ${isSpinning ? 'text-white' : 'text-white'}
-            ${isWinning ? 'drop-shadow-[0_0_10px_rgba(255,215,0,0.8)]' : 'drop-shadow-lg'}
+            text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold vegas-font
+            text-yellow-300 bg-gradient-to-br from-yellow-400 via-yellow-200 to-orange-400
+            drop-shadow-[0_0_30px_gold] shadow-[0_2px_8px_rgba(255,215,0,0.7)]
+            ${isSpinning ? 'blur-[1.5px]' : ''}
+            ${isWinning ? 'ring-4 ring-yellow-400 shadow-[0_0_40px_rgba(255,215,0,0.8)]' : 'drop-shadow-lg'}
+            neon-gold
           `}
-          animate={isSpinning ? { 
-            rotateY: [0, 180, 360],
-            scale: [1, 0.8, 1]
+          animate={isSpinning ? (
+            isLastInRow ? {
+              y: [60, -60], // 아래에서 위로 이동
+              scale: [1, 1.25, 1],
+              filter: [
+                'blur(2px) brightness(1.2)',
+                'blur(0.5px) brightness(1.4)',
+                'blur(2px) brightness(1.2)'
+              ]
+            } : {
+              y: [40, -40], // 아래에서 위로 이동
+              scale: [1, 1.15, 1],
+              filter: [
+                'blur(2px) brightness(1.2)',
+                'blur(0.5px) brightness(1.4)',
+                'blur(2px) brightness(1.2)'
+              ]
+            }
+          ) : {}}
+          transition={isSpinning ? {
+            duration: isLastInRow ? 0.8 : 0.5,
+            repeat: Infinity,
+            ease: 'linear'
           } : {}}
-          transition={{
-            duration: 0.3,
-            repeat: isSpinning ? Infinity : 0,
-            ease: "easeInOut"
-          }}
         >
           {symbol}
         </motion.span>
@@ -175,17 +195,22 @@ export const AnimatedSpinButton: React.FC<AnimatedSpinButtonProps> = ({
       )}
       
       <motion.span 
-        className="text-2xl sm:text-3xl relative z-10"
-        animate={spinning ? { 
-          rotate: 360,
-          scale: [1, 1.2, 1]
+        className="text-2xl sm:text-3xl relative z-10 drop-shadow-[0_0_20px_rgba(236,72,153,0.7)]"
+        animate={spinning ? {
+          rotate: [0, 360],
+          scale: [1, 1.25, 1],
+          filter: [
+            'blur(1.5px) brightness(1.3)',
+            'blur(0.5px) brightness(1.5)',
+            'blur(1.5px) brightness(1.3)'
+          ]
         } : {
           rotate: [0, 5, -5, 0]
         }}
         transition={{
-          duration: spinning ? 0.5 : 2,
+          duration: spinning ? 0.4 : 2,
           repeat: Infinity,
-          ease: spinning ? "linear" : "easeInOut"
+          ease: spinning ? 'linear' : 'easeInOut'
         }}
       >
         🎰

@@ -9,20 +9,15 @@ const PaytableModal: React.FC<PaytableModalProps> = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   const symbolData = [
-    { symbol: '🍒', name: '체리', payout: '2x', rarity: 'low' },
-    { symbol: '🍋', name: '레몬', payout: '3x', rarity: 'low' },
-    { symbol: '🍊', name: '오렌지', payout: '3x', rarity: 'low' },
-    { symbol: '🍇', name: '포도', payout: '4x', rarity: 'low' },
-    { symbol: '🔔', name: '벨', payout: '5x', rarity: 'medium' },
-    { symbol: '⭐', name: '스타', payout: '8x', rarity: 'medium' },
-    { symbol: '💎', name: '다이아몬드', payout: '10x', rarity: 'medium' },
-    { symbol: '🎯', name: '타겟', payout: '12x', rarity: 'medium' },
-    { symbol: '7️⃣', name: '럭키 7', payout: '20x', rarity: 'high' },
-    { symbol: '🎰', name: '슬롯머신', payout: '50x', rarity: 'high' },
-    { symbol: '👑', name: '왕관', payout: '75x', rarity: 'high' },
-    { symbol: '💰', name: '머니백', payout: '100x', rarity: 'high' },
-    { symbol: '🌟', name: '와일드', payout: '2배 배수', rarity: 'special' },
-    { symbol: '💥', name: '스캐터', payout: '보너스', rarity: 'special' },
+    { symbol: '1', name: '숫자 1', payout: '2x', rarity: 'low' },
+    { symbol: '2', name: '숫자 2', payout: '3x', rarity: 'low' },
+    { symbol: '3', name: '숫자 3', payout: '4x', rarity: 'low' },
+    { symbol: '4', name: '숫자 4', payout: '5x', rarity: 'medium' },
+    { symbol: '5', name: '숫자 5', payout: '6x', rarity: 'medium' },
+    { symbol: '6', name: '숫자 6', payout: '8x', rarity: 'medium' },
+    { symbol: '7', name: '럭키 7', payout: '20x', rarity: 'high' },
+    { symbol: '8', name: '숫자 8', payout: '10x', rarity: 'medium' },
+    { symbol: '9', name: '숫자 9', payout: '15x', rarity: 'high' },
   ];
 
   const getRarityColor = (rarity: string) => {
@@ -58,7 +53,9 @@ const PaytableModal: React.FC<PaytableModalProps> = ({ isOpen, onClose }) => {
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <span className="text-3xl">{item.symbol}</span>
+                  <div className="w-12 h-12 flex items-center justify-center bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg text-white font-black text-2xl shadow-lg">
+                    {item.symbol}
+                  </div>
                   <div>
                     <div className="font-bold text-lg">{item.name}</div>
                     <div className="text-sm opacity-75 capitalize">{item.rarity}</div>
@@ -72,14 +69,14 @@ const PaytableModal: React.FC<PaytableModalProps> = ({ isOpen, onClose }) => {
           ))}
         </div>
 
-        <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 p-4 rounded-xl">
-          <h3 className="font-bold text-lg mb-3 text-gray-800 dark:text-white">🎯 승리 조건</h3>
+        <div className="bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 p-4 rounded-xl">
+          <h3 className="font-bold text-lg mb-3 text-gray-800 dark:text-white">� 파친코 승리 조건</h3>
           <div className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
-            <div>• 가로, 세로, 대각선으로 같은 심볼 3개가 연결되면 승리</div>
-            <div>• 와일드(🌟)는 다른 심볼을 대체하고 2배 배수 적용</div>
-            <div>• 여러 라인에서 동시 승리 가능</div>
-            <div>• BIG WIN: 베팅액의 20배 이상</div>
-            <div>• MEGA WIN: 베팅액의 50배 이상</div>
+            <div>• 한 줄(3칸)에서 같은 숫자 3개가 나오면 승리!</div>
+            <div>• 숫자 7이 3개 나오면 🎉 JACKPOT! (20배 배당)</div>
+            <div>• 파친코 스타일: 릴이 순차적으로 멈추며 긴장감 연출</div>
+            <div>• BIG WIN: 베팅액의 10배 이상</div>
+            <div>• JACKPOT WIN: 베팅액의 20배 이상</div>
           </div>
         </div>
 

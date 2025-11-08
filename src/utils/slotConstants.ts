@@ -1,22 +1,19 @@
 // 슬롯머신 관련 상수 및 타입
 
 export const SYMBOLS = {
-  low: ['🎊', '⚡', '🔥'],
-  medium: ['💰', '🎯', '🍀'],
-  high: ['💥', '🌟', '💎'],
-  special: ['🌟', '💥']
+  numbers: ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣']
 };
 
 export const SYMBOL_PAYOUTS: Record<string, number> = {
-  '🎊': 2,
-  '⚡': 3,
-  '🔥': 3,
-  '💰': 4,
-  '🎯': 5,
-  '🍀': 6,
-  '💥': 8,
-  '🌟': 8,
-  '💎': 10
+  '1️⃣': 2,
+  '2️⃣': 3,
+  '3️⃣': 4,
+  '4️⃣': 5,
+  '5️⃣': 6,
+  '6️⃣': 8,
+  '7️⃣': 20,
+  '8️⃣': 10,
+  '9️⃣': 15
 };
 
 export const PAYLINES: number[][] = [
@@ -31,11 +28,8 @@ export const PAYLINES: number[][] = [
 ];
 
 export function getWeightedRandomSymbol(): string {
-  const random = Math.random();
-  if (random < 0.45) return SYMBOLS.low[Math.floor(Math.random() * SYMBOLS.low.length)];
-  if (random < 0.75) return SYMBOLS.medium[Math.floor(Math.random() * SYMBOLS.medium.length)];
-  if (random < 0.92) return SYMBOLS.high[Math.floor(Math.random() * SYMBOLS.high.length)];
-  return SYMBOLS.special[Math.floor(Math.random() * SYMBOLS.special.length)];
+  // 숫자 심볼만 반환
+  return SYMBOLS.numbers[Math.floor(Math.random() * SYMBOLS.numbers.length)];
 }
 
 export function getRandomSymbols(): string[] {
