@@ -340,12 +340,8 @@ export const usePerformanceOptimization = () => {
 
 // 🚀 코드 스플리팅 최적화
 export const OptimizedComponents = {
-  // 지연 로딩 컴포넌트들
-  Slot3D: lazy(() => import('../components/PremiumSlot3D')),
-  PremiumEffects: lazy(() => import('../components/PremiumEffects').then(module => ({ default: module.PremiumParticles }))),
-  AudioVisualizer: lazy(() => import('../components/PremiumUI').then(module => ({ 
-    default: module.PremiumButton 
-  }))),
+  // 현재 사용 중인 컴포넌트들만 포함
+  SlotMachineBoard: lazy(() => import('../components/SlotMachineBoard')),
 
   // 메모화된 컴포넌트들 (참고용 - 실제 JSX는 컴포넌트 파일에서 구현)
   createMemoizedSlotReel: (symbol: string, isSpinning: boolean) => ({
