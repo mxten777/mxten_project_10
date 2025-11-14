@@ -18,18 +18,23 @@ const Leaderboard: React.FC = () => {
   }, []);
 
   return (
-    <div className="p-3 bg-gradient-to-r from-gray-100/80 to-yellow-50/80 dark:from-gray-800/80 dark:to-yellow-900/80 rounded-xl shadow w-full h-24 flex flex-col justify-center items-center">
-      <div className="font-bold text-sm dark:text-yellow-200 flex items-center gap-2 mb-2">
-        <span className="text-lg">🏆</span>
-        <span>리더보드</span>
-      </div>
-      {loading ? (
-        <div className="text-center text-gray-400 dark:text-gray-300 text-xs">로딩중...</div>
-      ) : (
-        <div className="text-center text-sm">
-          {items.length > 0 ? `1위: ${items[0].score.toLocaleString()}점` : '기록 없음'}
+    <div className="p-4 sm:p-6 bg-gradient-to-r from-yellow-600 to-orange-600 rounded-xl shadow-lg w-full min-h-[100px] flex flex-col justify-center items-center">
+      <div className="flex flex-col items-center justify-center gap-2 sm:gap-3">
+        <div className="font-bold text-base sm:text-lg flex items-center gap-2 sm:gap-3 text-white">
+          <span className="text-xl sm:text-2xl">🏆</span>
+          <span>리더보드</span>
         </div>
-      )}
+        {loading ? (
+          <div className="text-center text-yellow-100 text-sm font-semibold">로딩중...</div>
+        ) : (
+          <div className="text-center text-sm sm:text-base font-bold text-white">
+            {items.length > 0 
+              ? `1위: ${items[0].score.toLocaleString()}점` 
+              : '기록 없음'
+            }
+          </div>
+        )}
+      </div>
     </div>
   );
 };

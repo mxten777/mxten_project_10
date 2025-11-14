@@ -5,15 +5,15 @@ export const SYMBOLS = {
 };
 
 export const SYMBOL_PAYOUTS: Record<string, number> = {
-  '1️⃣': 2,
-  '2️⃣': 3,
-  '3️⃣': 4,
+  '1️⃣': 10,
+  '2️⃣': 5,
+  '3️⃣': 10,
   '4️⃣': 5,
-  '5️⃣': 6,
-  '6️⃣': 8,
+  '5️⃣': 10,
+  '6️⃣': 5,
   '7️⃣': 20,
-  '8️⃣': 10,
-  '9️⃣': 15
+  '8️⃣': 5,
+  '9️⃣': 10
 };
 
 export const PAYLINES: number[][] = [
@@ -28,8 +28,20 @@ export const PAYLINES: number[][] = [
 ];
 
 export function getWeightedRandomSymbol(): string {
-  // 숫자 심볼만 반환
-  return SYMBOLS.numbers[Math.floor(Math.random() * SYMBOLS.numbers.length)];
+  // 숫자 3개가 더 자주 나오게 가중치 적용
+  const pool = [
+    '1️⃣','2️⃣','3️⃣','4️⃣','5️⃣','6️⃣','7️⃣','8️⃣','9️⃣',
+    // 3개씩 추가로 확률 증가
+    '1️⃣','2️⃣','3️⃣','4️⃣','5️⃣','6️⃣','7️⃣','8️⃣','9️⃣',
+    '1️⃣','2️⃣','3️⃣','4️⃣','5️⃣','6️⃣','7️⃣','8️⃣','9️⃣',
+    // 3개가 더 자주 나오게
+    '3️⃣','3️⃣','3️⃣',
+    '7️⃣','7️⃣','7️⃣',
+    '1️⃣','1️⃣','1️⃣',
+    '5️⃣','5️⃣','5️⃣',
+    '9️⃣','9️⃣','9️⃣'
+  ];
+  return pool[Math.floor(Math.random() * pool.length)];
 }
 
 export function getRandomSymbols(): string[] {
