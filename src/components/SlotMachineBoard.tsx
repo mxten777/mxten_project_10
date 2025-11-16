@@ -99,10 +99,19 @@ const SlotMachineBoard: React.FC = () => {
       setReels(finalReels);
       setSpinning(false);
       
-      // 릴이 완전히 정지한 후 적절한 대기 시간으로 결과 표시
+      // 1단계: 릴 정지 후 단계별 빅윈 연출
       setTimeout(() => {
-        processSpinResult(finalReels, combo, bet);
-      }, 1200); // 단일 타이머로 1.2초 대기
+        // 릴 정지 즉시 winningLine 표시 (시각적 피드백)
+        const isWin = finalReels[0] === finalReels[1] && finalReels[1] === finalReels[2];
+        if (isWin) {
+          setWinningLine([true, true, true]);
+        }
+        
+        // 2단계: 0.5초 후 결과 처리 및 극적 연출 시작
+        setTimeout(() => {
+          processSpinResult(finalReels, combo, bet);
+        }, 500);
+      }, 300); // 릴 정지 후 0.3초 대기
     }, 2000);
   }, [spinning, balance, bet, autoSpin, setAutoSpin, soundOn, combo, decreaseBalance, processSpinResult]);
 
@@ -128,24 +137,24 @@ const SlotMachineBoard: React.FC = () => {
   }, [autoSpin, spinning, result, balance, bet, totalWin, handleSpin]);
 
   return (
-    <div className="flex flex-col items-center gap-6 sm:gap-8 md:gap-10 w-full max-w-4xl mx-auto px-4 sm:px-6 md:px-8">
+    <div className="flex flex-col items-center gap-4 sm:gap-6 md:gap-8 lg:gap-10 w-full max-w-6xl mx-auto px-2 sm:px-4 md:px-6 lg:px-8">
       {/* 컨트롤 패널 */}
-      <div className="w-full max-w-2xl flex justify-center items-center gap-6 sm:gap-8 p-6 sm:p-8 md:p-10 bg-gradient-to-r from-slate-800 to-purple-800 rounded-2xl shadow-2xl border-2 border-purple-400/30">
+      <div className="w-full max-w-xl sm:max-w-2xl flex justify-center items-center gap-4 sm:gap-6 md:gap-8 p-4 sm:p-6 md:p-8 lg:p-10 bg-gradient-to-r from-slate-800 to-purple-800 rounded-xl sm:rounded-2xl shadow-2xl border-2 border-purple-400/30">
         <SoundVibrationToggle />
         <AutoSpinToggle />
       </div>
 
       {/* 라스베가스 스타일 슬롯 머신 */}
       <div className="w-full flex justify-center">
-        <div className="p-10 sm:p-14 md:p-16 lg:p-20 bg-gradient-to-br from-yellow-600 via-red-800 to-purple-900 rounded-3xl shadow-2xl border-4 border-yellow-400 relative overflow-hidden max-w-5xl w-full">
+        <div className="p-6 sm:p-10 md:p-14 lg:p-16 xl:p-20 bg-gradient-to-br from-yellow-600 via-red-800 to-purple-900 rounded-2xl sm:rounded-3xl shadow-2xl border-4 border-yellow-400 relative overflow-hidden max-w-7xl w-full">
           {/* 네온 글로우 효과 */}
           <div className="absolute inset-0 bg-gradient-to-br from-yellow-400/20 via-red-400/20 to-purple-400/20 rounded-3xl animate-pulse" />
           <div className="absolute inset-2 border-2 border-yellow-300/50 rounded-2xl animate-ping opacity-60" />
-          <div className="relative z-10 flex items-center justify-center gap-8 sm:gap-12 md:gap-16 lg:gap-20">
+          <div className="relative z-10 flex items-center justify-center gap-4 sm:gap-8 md:gap-12 lg:gap-16 xl:gap-20 2xl:gap-24">
             {reels.map((symbol, i) => (
               <div
                 key={i}
-                className={`w-40 h-56 sm:w-48 sm:h-64 md:w-56 md:h-72 lg:w-64 lg:h-80 xl:w-72 xl:h-88 bg-gradient-to-br from-black via-gray-900 to-black rounded-2xl border-4 flex items-center justify-center text-7xl sm:text-8xl md:text-9xl lg:text-[8rem] xl:text-[9rem] transition-all duration-500 relative overflow-hidden shadow-2xl ${
+                className={`w-48 h-72 sm:w-56 sm:h-80 md:w-64 md:h-88 lg:w-72 lg:h-96 xl:w-80 xl:h-[28rem] 2xl:w-88 2xl:h-[32rem] bg-gradient-to-br from-black via-gray-900 to-black rounded-xl sm:rounded-2xl border-2 sm:border-4 flex items-center justify-center text-7xl sm:text-8xl md:text-9xl lg:text-[8rem] xl:text-[9rem] 2xl:text-[11rem] transition-all duration-500 relative overflow-hidden shadow-2xl ${
                   spinning 
                     ? 'border-cyan-400 shadow-xl shadow-cyan-400/60 scale-110 animate-pulse' 
                     : 'border-yellow-400/60'
@@ -158,12 +167,19 @@ const SlotMachineBoard: React.FC = () => {
                 {/* 내부 네온 글로우 */}
                 <div className="absolute inset-1 bg-gradient-to-br from-yellow-400/10 to-red-400/10 rounded-xl" />
                 
-                <div className={`relative z-10 font-bold drop-shadow-2xl ${
-                  spinning ? 'animate-spin text-cyan-300' : 'text-yellow-200'
+                {/* 하늘색 직사각형 숫자판 */}
+                <div className={`relative z-10 w-24 h-32 sm:w-28 sm:h-36 md:w-32 md:h-40 lg:w-36 lg:h-44 xl:w-40 xl:h-48 2xl:w-44 2xl:h-52 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg sm:rounded-xl flex items-center justify-center shadow-xl ${
+                  spinning ? 'animate-pulse' : ''
                 } ${
-                  winningLine[i] ? 'animate-pulse text-yellow-100 drop-shadow-[0_0_20px_rgba(255,255,0,0.8)]' : ''
+                  winningLine[i] ? 'animate-bounce shadow-xl shadow-blue-400/50' : ''
                 }`}>
-                  {symbol}
+                  <div className={`font-black text-white drop-shadow-2xl text-6xl sm:text-7xl md:text-8xl lg:text-9xl xl:text-[8rem] 2xl:text-[10rem] leading-none ${
+                    spinning ? 'animate-spin' : ''
+                  } ${
+                    winningLine[i] ? 'animate-pulse drop-shadow-[0_0_20px_rgba(255,255,255,1)]' : ''
+                  }`}>
+                    {symbol.replace('️⃣', '')}
+                  </div>
                 </div>
                 
                 {/* 승리 시 강력한 발광 효과 */}
@@ -190,7 +206,7 @@ const SlotMachineBoard: React.FC = () => {
           {/* 라스베가스 스타일 스핀 버튼 */}
           {!autoSpin && (
             <button
-              className={`relative z-10 mt-10 sm:mt-12 md:mt-14 px-16 py-8 text-3xl sm:text-4xl md:text-5xl font-black rounded-2xl transition-all duration-300 w-full border-4 overflow-hidden ${
+              className={`relative z-10 mt-6 sm:mt-10 md:mt-12 lg:mt-14 px-8 sm:px-12 md:px-16 py-4 sm:py-6 md:py-8 text-xl sm:text-3xl md:text-4xl lg:text-5xl font-black rounded-xl sm:rounded-2xl transition-all duration-300 w-full border-2 sm:border-4 overflow-hidden ${
                 balance < bet 
                   ? 'bg-gray-700 text-gray-400 cursor-not-allowed border-gray-600'
                   : 'bg-gradient-to-r from-red-600 via-yellow-500 to-red-600 text-white hover:from-red-700 hover:via-yellow-400 hover:to-red-700 active:scale-95 shadow-2xl border-yellow-400 hover:shadow-yellow-400/50'
@@ -321,7 +337,7 @@ const SlotMachineBoard: React.FC = () => {
 
       {/* 라스베가스 스타일 결과 표시 */}
       {result && (
-        <div className={`relative w-full max-w-3xl mx-auto p-10 sm:p-12 md:p-14 rounded-3xl text-center font-black shadow-2xl transform transition-all duration-500 border-4 overflow-hidden ${
+        <div className={`relative w-full max-w-4xl mx-auto p-6 sm:p-8 md:p-10 lg:p-12 xl:p-14 rounded-2xl sm:rounded-3xl text-center font-black shadow-2xl transform transition-all duration-500 border-2 sm:border-4 overflow-hidden ${
           totalWin > 0 
             ? 'bg-gradient-to-r from-yellow-500 via-orange-500 to-red-500 text-white scale-110 animate-pulse border-yellow-300 shadow-yellow-400/50'
             : 'bg-gradient-to-r from-red-700 to-gray-800 text-white border-red-400'

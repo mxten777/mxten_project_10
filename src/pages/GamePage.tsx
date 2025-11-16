@@ -12,12 +12,12 @@ import ScoreEffectSystem from '../components/ScoreEffectSystem';
 const GamePage: React.FC = () => {
   return (
     <ScoreEffectSystem>
-      <div className="min-h-screen p-4 sm:p-6 lg:p-8 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-        <div className="flex flex-col items-center gap-4 sm:gap-6 md:gap-8 max-w-4xl mx-auto">
+      <div className="min-h-screen p-2 sm:p-4 md:p-6 lg:p-8 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+        <div className="flex flex-col items-center gap-3 sm:gap-4 md:gap-6 lg:gap-8 max-w-7xl mx-auto">
           {/* 깔끔한 헤더 */}
-          <div className="w-full flex flex-col sm:flex-row justify-between items-center gap-4 sm:gap-6 p-4 sm:p-6 md:p-8 bg-gradient-to-r from-slate-800/90 via-purple-800/90 to-slate-800/90 backdrop-blur-xl rounded-2xl border border-purple-400/30 shadow-xl">
+          <div className="w-full flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-4 md:gap-6 p-3 sm:p-4 md:p-6 lg:p-8 bg-gradient-to-r from-slate-800/90 via-purple-800/90 to-slate-800/90 backdrop-blur-xl rounded-xl sm:rounded-2xl border border-purple-400/30 shadow-xl">
             <div className="flex items-center justify-center sm:justify-start">
-              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-white text-center sm:text-left leading-tight">
+              <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-black text-white text-center sm:text-left leading-tight">
                 🎰 <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 bg-clip-text text-transparent">PREMIUM SLOTS</span>
               </h1>
             </div>
